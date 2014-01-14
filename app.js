@@ -28,10 +28,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
+  app.use(express.static(path.join(__dirname, '/test')));
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/api/users', function(req, res){
+	res.json({
+		name: "Guzman Monne",
+		email: "guzmonne@hotmail.com",
+		phone: "6962030",
+		cellphone: "099750505",
+		rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+	});
+});
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

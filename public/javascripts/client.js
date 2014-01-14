@@ -5,6 +5,7 @@ window.App = {
   Views: {},
   Regions: {},
   Mixins: {},
+  Config: {},
   vent: _.extend({}, Backbone.Events),
   headerRegion: null,
   contentRegion: null,
@@ -12,15 +13,9 @@ window.App = {
   appDetails: null,
   awake: function() {
     this.appDetails = new App.Models.Application();
-    this.headerRegion = new App.Regions.HeaderRegion({
-      currentView: new App.Views.ClientNav()
-    });
-    this.contentRegion = new App.Regions.ContentRegion({
-      currentView: new App.Views.ContentView()
-    });
-    this.footerRegion = new App.Regions.FooterRegion({
-      currentView: new App.Views.ClientFooter()
-    });
+    this.headerRegion = new App.Regions.HeaderRegion();
+    this.contentRegion = new App.Regions.ContentRegion();
+    this.footerRegion = new App.Regions.FooterRegion();
     return App.start();
   },
   start: function() {
@@ -72,7 +67,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.title); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a>\r\n	</div>\r\n	<div class=\"collapse navbar-collapse\">\r\n		<ul class=\"nav navbar-nav\">\r\n			<li class=\"active\"> <a href=\"#\">Home</a> </li>\r\n			<li> <a href=\"#\">About</a> </li>\r\n			<li> <a href=\"#\">Contact</a> </li>\r\n			<li>\r\n				<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\r\n					Dropdown \r\n					<b class='caret'></b>\r\n				</a>\r\n				<ul class=\"dropdown-menu\">\r\n					<li><a href=\"#\">Action</a></li>\r\n					<li><a href=\"#\">Another Action</a></li>\r\n					<li><a href=\"#\">One More Action</a></li>\r\n					<li class=\"divider\"></li>\r\n					<li class=\"dropdown-header\">Nav Header</li>\r\n					<li><a href=\"#\">Separated Link</a></li>\r\n					<li><a href=\"#\">Another Separated Link</a></li>\r\n				</ul>\r\n			</li>\r\n		</ul>\r\n	</div>\r\n</div>";
+    + "</a>\r\n	</div>\r\n	<div class=\"collapse navbar-collapse\">\r\n		<ul class=\"nav navbar-nav\">\r\n			<li class=\"active nav-button\"> <a href=\"#\" id=\"nav-home\">Home</a></li>\r\n			<li class=\"nav-button\"><a href=\"#\" id=\"nav-about\">About</a></li>\r\n			<li class=\"nav-button\"><a href=\"#\" id=\"nav-contact\">Contact</a></li>\r\n			<li>\r\n				<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\r\n					Dropdown \r\n					<b class='caret'></b>\r\n				</a>\r\n				<ul class=\"dropdown-menu\">\r\n					<li><a href=\"#\">Action</a></li>\r\n					<li><a href=\"#\">Another Action</a></li>\r\n					<li><a href=\"#\">One More Action</a></li>\r\n					<li class=\"divider\"></li>\r\n					<li class=\"dropdown-header\">Nav Header</li>\r\n					<li><a href=\"#\">Separated Link</a></li>\r\n					<li><a href=\"#\">Another Separated Link</a></li>\r\n				</ul>\r\n			</li>\r\n		</ul>\r\n	</div>\r\n</div>";
   return buffer;
   });
 var _ref, _ref1,
@@ -121,12 +116,14 @@ App.Models.User = (function(_super) {
 
   User.prototype.defaults = function() {
     return {
-      id: null,
-      name: null,
-      email: null,
-      phone: null,
-      cellphone: null,
-      remember_token: null
+      id: Math.floor((Math.random() * 100) + 1),
+      name: "",
+      email: "",
+      phone: "",
+      cellphone: "",
+      rememberToken: "",
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
   };
 
@@ -148,16 +145,13 @@ App.Collections.Users = (function(_super) {
 
   Users.prototype.model = App.Models.User;
 
-  Users.prototype.urlRoot = '/users';
-
-  Users.prototype.url = '/users';
+  Users.prototype.url = '/api/users';
 
   return Users;
 
 })(Backbone.Collection);
 
 var _ref, _ref1, _ref2, _ref3,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -165,8 +159,6 @@ App.Regions.BaseRegion = (function(_super) {
   __extends(BaseRegion, _super);
 
   function BaseRegion() {
-    this.render = __bind(this.render, this);
-    this.setView = __bind(this.setView, this);
     _ref = BaseRegion.__super__.constructor.apply(this, arguments);
     return _ref;
   }
@@ -176,6 +168,9 @@ App.Regions.BaseRegion = (function(_super) {
   BaseRegion.prototype.currentView = null;
 
   BaseRegion.prototype.initialize = function(options) {
+    if (options == null) {
+      options = {};
+    }
     if (options.container != null) {
       this.container = options.container;
     }
@@ -184,24 +179,22 @@ App.Regions.BaseRegion = (function(_super) {
     }
   };
 
-  BaseRegion.prototype.setView = function(newView, oldView) {
-    if (oldView === null) {
-      oldView = newView;
-    } else if (oldView.cid !== newView.cid) {
-      oldView.remove();
-      oldView = null;
-      return oldView = newView;
+  BaseRegion.prototype.swapCurrentView = function(newView) {
+    if (this.currentView) {
+      this.currentView.remove();
     }
+    return this.currentView = newView;
   };
 
-  BaseRegion.prototype.render = function(view) {
-    if ((view != null) && (this.currentView != null)) {
-      return false;
-    } else {
-      view = this.currentView;
+  BaseRegion.prototype.swapAndRenderCurrentView = function(newView) {
+    this.swapCurrentView(newView);
+    return this.render();
+  };
+
+  BaseRegion.prototype.render = function() {
+    if (!((this.currentView != null) && (this.container != null))) {
+      return;
     }
-    $(this.container).html('');
-    this.setView(view, this.currentView);
     $(this.container).append(this.currentView.render().el);
     return this;
   };
@@ -267,11 +260,18 @@ App.Views.BaseView = (function(_super) {
   BaseView.prototype.template = null;
 
   BaseView.prototype.initialize = function() {
-    return this.model = App.appDetails;
+    if (this.model == null) {
+      return this.model = App.appDetails;
+    }
   };
 
   BaseView.prototype.render = function() {
     $(this.el).html(this.template(this.model.attributes));
+    return this;
+  };
+
+  BaseView.prototype.renderIn = function(container) {
+    $(container).html(this.template(this.model.attributes));
     return this;
   };
 
@@ -302,6 +302,17 @@ App.Views.ClientNav = (function(_super) {
   }
 
   ClientNav.prototype.template = HBS['src/templates/header.hbs'];
+
+  ClientNav.prototype.events = {
+    'click ul.nav.navbar-nav li a': 'toggleActiveButton'
+  };
+
+  ClientNav.prototype.toggleActiveButton = function(e) {
+    var id;
+    id = '#' + e.target.id;
+    $('ul.nav.navbar-nav li.active').removeClass('active');
+    return $(id).parent().addClass('active');
+  };
 
   return ClientNav;
 
@@ -339,9 +350,9 @@ App.Routers.MainRouter = (function(_super) {
 
   MainRouter.prototype.index = function() {
     console.log("Backbone is up and running!");
-    App.headerRegion.render();
-    App.contentRegion.render();
-    return App.footerRegion.render();
+    App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav);
+    App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView);
+    return App.footerRegion.swapAndRenderCurrentView(new App.Views.ClientFooter);
   };
 
   return MainRouter;

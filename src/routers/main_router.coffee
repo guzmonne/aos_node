@@ -4,6 +4,6 @@ class App.Routers.MainRouter extends Backbone.Router
 
 	index: ->
 		console.log "Backbone is up and running!"
-		App.headerRegion.render()
-		App.contentRegion.render()
-		App.footerRegion.render()
+		App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav)
+		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView)
+		App.footerRegion.swapAndRenderCurrentView(new App.Views.ClientFooter)

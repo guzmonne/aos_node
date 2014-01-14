@@ -1,6 +1,17 @@
 module.exports = function(grunt){
 	// Project Configuration
 	grunt.initConfig({
+		concurrent: {
+			srcAndSpecWatch: ['watch:src', 'watch:spec']
+		},
+		jshint: {
+			test: {
+				options: {
+					jshintrc: './.jshintrc'	
+				},
+				src: ['test/javascripts/spec/*.js']
+			}
+		},
 		watch: {
 			src: {
 				files: ['src/**/*'],
@@ -15,6 +26,10 @@ module.exports = function(grunt){
 							,	'concat:handlebars'
 							,	'concat:client'
 							,	'clean:cleanClientBuild']
+			},
+			spec: {
+				files: ['test/javascripts/spec/*'],
+				tasks: ['concat:specs']
 			}
 		},
 		clean: {
@@ -32,6 +47,7 @@ module.exports = function(grunt){
 												, 'public/javascripts/views.coffee'
 												, 'public/javascripts/regions.coffee'
 												, 'public/javascripts/routers.coffee'
+												, 'public/javascripts/app.js'
 												],
 			jsOnSrc: ['src/**/*.js']
 		},
@@ -72,6 +88,10 @@ module.exports = function(grunt){
 						, "public/javascripts/views.js"
 						, "public/javascripts/routers.js"],
 				dest: 'public/javascripts/client.js'
+			},
+			specs: {
+				src: ['test/javascripts/spec/*.spec.js'],
+				dest: 'test/javascripts/allspecs.spec.js'
 			}
 		},
 		coffee: {
@@ -113,6 +133,8 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-concurrent');
 
 	// Tasks
 	grunt.registerTask('default', [ 'clean' 
@@ -128,4 +150,5 @@ module.exports = function(grunt){
 	                   						, 'clean:cleanClientBuild']);
 
 	grunt.registerTask('compileHandlebars', ['handlebars:compile']);
+	grunt.registerTask('watchTasks', ['concurrent:srcAndSpecWatch']);
 }

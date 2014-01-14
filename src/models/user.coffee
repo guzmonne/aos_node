@@ -7,9 +7,11 @@ class App.Models.User extends Backbone.Model
 		u
 
 	defaults: ->
-		id: null
-		name: null
-		email: null
-		phone: null
-		cellphone: null
-		remember_token: null
+		id: Math.floor((Math.random()*100)+1)
+		name: ""
+		email: ""
+		phone: ""
+		cellphone: ""
+		rememberToken: ""
+		createdAt: new Date()
+		updatedAt: new Date()

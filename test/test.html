@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title>AOS Tests</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+		<link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+		<link rel="stylesheet" href="stylesheets/mocha.css">
+		<!-- JavaScript Test Libraries -->
+		<script src="javascripts/libs/mocha.js"></script>		
+		<script src="javascripts/libs/chai.js"></script>
+		<script src="javascripts/libs/sinon-chai.js"></script>		
+		<script src="javascripts/libs/sinon.js"></script>		
+		<!-- JavaScript Core Libraries -->
+		<script src="javascripts/libs/underscore.min.js"></script>
+		<script src="javascripts/libs/jquery.min.js"></script>
+		<script src="javascripts/libs/backbone.min.js"></script>
+		<script src="javascripts/libs/bootstrap.min.js"></script>
+		<script src="javascripts/libs/handlebars.js"></script>
+		<!-- JavaScript Application Libraries -->
+		<script src="javascripts/client.js"></script>
+		<script>
+			// Chai is configured to use the expect assertion function globally
+			// ----------------------------------------------------------------
+			// Setup
+			var expect = chai.expect;
+			mocha.setup("bdd");
+
+			// Mocha is set up to use the bdd test interface and start tests on the 
+			// window.onload event
+			// --------------------------------------------------------------------
+			// Run tests on window load event
+			window.onload = function(){
+				mocha.run();
+				$('.recommendation').toggle();
+			};			
+			$(document).ready(function(){
+				$('#recommendations').click(function(){
+					$('.recommendation').toggle();
+				});
+			});
+		</script>		
+		<script src="javascripts/allspecs.spec.js"></script>
+	</head>
+	<body>
+		<section class="container-fluid">
+			<div id="mocha"></div>
+			<div class="col-lg-12">
+				<h1><a id="recommendations">Backbone Testing Recommendations</a></h1>
+				<div class="recommendation">
+					<h2>Backbone Coding Recommendations</h2>
+					<ul>
+						<li>
+							<strong class="text-primary">Decouple component and limit dependecies</strong>: For example, is preferable to add a model to a view when instantiating the new view than creating the model inside an <code>initialize()</code> function. This opens opportunities for injecting mocks or test-friendly models into the view code.
+						</li>
+						<li>
+							<strong class="text-primary">Isolate configuration information</strong>: Any pure confuguration data should get its own application file and facilitate the overriding of specific configurations.
+						</li>
+						<li>
+							<strong class="text-primary">Decompose large functions</strong>: Monolithic functions that try to do everything are often dificult to test. Break them into smaller parts, and aggregate them into one.
+						</li>
+						<li>
+							<strong class="text-primary">Avoid hidden state</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="recommendation">
+					<h2>Spies, Stubs, and Mocks</h2>
+					<ul>
+						<li>
+							<strong class="text-primary">Spies</strong>: Wraps a method under test and records inputs and outputs without modifying any of the underlying information.
+						</li>
+						<li>
+							<strong class="text-primary">Stubs</strong>: Replaces functionality of a method under test with new behaviour. Useful for isolations.
+						</li>
+						<li>
+							<strong class="text-primary">Mocks</strong>: Combination of Spies and Stubs. They observe the function and replace its behaviour. 
+						</li>
+					</ul>
+				</div>
+				<div class="recommendation">
+					<h2>Playing in the sandbox with Sinon.JS test helpers</h2>
+					<ul>
+						<li>
+							It's important to ensure that each <code>spy</code> calls <code>restore()</code>, regardless or not the underlying test has passed. Sinon.JS provides an execution enviroment dubbed as <strong class="text-primary">sandbox</strong> that can be configures with spies, mocks and other fake objects (for example, fake timers and AJAX requests). All this properties can then be unwounded with a single <code>restore()</code> call on the <code>sandbox</code> object.
+						</li>
+						<li>
+							<a href="http://sinonjs.org/docs/#sandbox">SinonJS Sandbox Docs</a> 
+						</li>
+						<li>
+							The <code>sinon.test</code> wrapper function creates a default <code>sandbox</code>, which is automatically restored after the wrapped code finishes its execution.
+						</li>
+						<li>
+							The downside of using <code>sinon.test</code> wrapper is that:
+							<ul>
+								<li>
+									Asynchronous Mocha tests can be tricky because <code>sinon.test</code> can potentiall restore the entire <code>sandbox</code> before the <code>done()</code> parameter is called.
+								</li>
+								<li>
+									Mocha test reporter will no longer show the test code when clicking on a spec description in the test driver web page.
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="recommendation">
+					<h2>Deciding when to mock</h2>
+					<p>
+						<em class="em text-primary">
+							"Mocks should only be used for the method under test. In every unit test, there should be on unit under test. If you want to control how your unit is being used and like staging expectations upfront(as opposed to asserting after the fact), use a mock"
+						</em><br>
+						<strong>From the Sinon.JS Mock API documentation.</strong>
+					</p>
+					<p>
+						<em class="text-primary">
+							"Mocks come with built-in expectations that may fail your test. Thus, they enforce implementation details. The rule of thumb is: <strong>if you would not add an assertion for some call specific, do not mock it.</strong>" Use a stub instead. In general you should never have more than one mock (possibly with several expectations) in a single test."
+						</em><br>
+						<strong>From the Sinon.JS Mock API documentation.</strong>
+					</p>
+				</div>
+			</div>
+		</section>
+		<!-- Test Fixtures -->
+		<!--<div id="fixtures" style="display: none; visibility: hidden;"></div>-->
+		<div id="fixtures"></div>
+	</body>
+</html>

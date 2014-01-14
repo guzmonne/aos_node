@@ -5,6 +5,7 @@ window.App =
 	Views: {}
 	Regions: {}
 	Mixins: {}
+	Config: {}
 
 	vent: _.extend({}, Backbone.Events)
 	# Regions
@@ -22,9 +23,9 @@ window.App =
 		@appDetails = new App.Models.Application()
 		# Initialize Regions
 		# ------------------
-		@headerRegion  = new App.Regions.HeaderRegion({currentView: new App.Views.ClientNav()})
-		@contentRegion = new App.Regions.ContentRegion({currentView: new App.Views.ContentView()})
-		@footerRegion = new App.Regions.FooterRegion({currentView: new App.Views.ClientFooter()})
+		@headerRegion  = new App.Regions.HeaderRegion()
+		@contentRegion = new App.Regions.ContentRegion()
+		@footerRegion  = new App.Regions.FooterRegion()
 		App.start()
 
 	start: ->

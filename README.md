@@ -1,9 +1,16 @@
-<h1>Readme</h1>
-<p>
-	Administrador de Ordenes de Servicio
-</p>
-<p>
-	<strong>OBS:</strong> El primer commit sirve como base para construir una aplicacione que utilice 'Express', 'Backbone.js' sobre 'Node.JS' <br>
-	'Handlebars.js' es utilizado como motor de templates para 'Backbone.js' y 'Bootstrap 3' como CSS framework. El layout basico de la app esta realizado sobre 'Jade'. <br>
-	Tambien 'Grunt' se utiliza para concatenar archivos, compilar coffescript, y realizar une limpieza simple de los directorios. Tambien se puede utilizar 'Grunt' para vigilar la carpeta '/src' donde estan todos los scripts en 'coffeescript' y los templates en 'hbs' para que sean automaticamente compilados y agregados a un archivo llamado 'client.js' que es luego pasado cargado en el browser.
-</p>
+AOS
+===
+
+v0.0.1
+------
+Express running on Node.JS with 'Backbone.js' as its frontend framework and 'Twitter Bootstrap 3' as its style framework.
+
+There are several 'Grunt' tasks created to facilitate the development of the app. Backbone.js related scripts are meant to be created inside the `/src` folder using 'CoffeScript'. Using the `grunt watch` task on the background, whenever a modification, creation, or deletion of a CoffeeScript file occurs in this folder, they will be compiled to JavaScript and concatenated into a file called `/public/javascripts/client.js`. This file is already in the `layout.jade` template which contains the main HTML blocks.
+
+All the libraries can be found on the `/public/javascripts` and `/public/stylesheets` folders. The latest releases of every library up to the 10 of January 2014 are used.
+
+There is no restful server API configured yet for persistent data.
+
+Tests frameworks are not yet implemented.
+
+This version can be found under the `git tag` 'v0.0.1'. It is meant to be use as a startup for more complex apps.
