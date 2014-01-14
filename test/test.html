@@ -30,7 +30,12 @@
 			// --------------------------------------------------------------------
 			// Run tests on window load event
 			window.onload = function(){
-				mocha.run();
+				// Only for working on Web Browsers
+				// --------------------------------
+				//mocha.run();
+				// To work both on Web Browsers and on PhantomJS
+				// ---------------------------------------------
+				(window.mochaPhantomJS || mocha).run();
 				$('.recommendation').toggle();
 			};			
 			$(document).ready(function(){

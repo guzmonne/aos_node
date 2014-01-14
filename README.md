@@ -14,3 +14,15 @@ There is no restful server API configured yet for persistent data.
 Tests frameworks are not yet implemented.
 
 This version can be found under the `git tag` 'v0.0.1'. It is meant to be use as a startup for more complex apps.
+
+v0.0.1a
+-------
+The only difference is that this version has Mocha.js working as the test framework. Also, Chai.js, and Sinon.js are used. 
+
+The `app.js` file was modified to serve static files from the `/test` folder when working on the app on development mode. So, accesing `localhost:3000/test.html` will open the setup page with the results of the test plus a few annotations about the framework and testing a Backbone app.
+
+Some tasks have been added to the `Gruntfile.js` to facilitate the creation of the tests. Running `grunt watchTasks` will start a task that monitors the `/src` folder for coffeescripts files to compile, and the `/test/javascripts/spec` to concatenate the specs into one file called `/test/javascripts/allspecs.js` so the test immediately appears on the `test.html` page.
+
+This version can be found under the `git tag` 'v0.0.1a'. It is meant to be use as a startup for more complex apps that needs to work with a basic testing framework.
+
+The next steps are to include 'Phantom.js' to create a browser simulation enviroment and to modify the existing code to work with 'Require.js'.
