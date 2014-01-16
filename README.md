@@ -26,3 +26,17 @@ Some tasks have been added to the `Gruntfile.js` to facilitate the creation of t
 This version can be found under the `git tag` 'v0.0.1a'. It is meant to be use as a startup for more complex apps that needs to work with a basic testing framework.
 
 The next steps are to include 'Phantom.js' to create a browser simulation enviroment and to modify the existing code to work with 'Require.js'.
+
+v0.0.1b
+-------
+This version has PhantomJS incorporated to the 'package.json' for browserless tests. 
+
+Also, new tasks has been added to the Gruntfile.js to allow the compilation of `*.spec.coffee` files and for continuous testing. Running `grunt concurrent:watch` now compiles all the coffee files in the `/src` and `/test/javascripts/specs` folders and automatically runs the tests as specified on the `test/test.html` file.
+
+Spec files can be created individually using CoffeeScript or JavaScript on the spec folder and they will be automatically compiled and concatenated into one file, which is already bootstraped to the `test.html` file for testing.
+
+This version can be found under the `git tag` 'v0.0.1b'. It is meant to be use as a startup for more complex apps that needs to work with a basic testing framework.
+
+I was planning to use RequireJS for this application but after some thoughts I am not going to do it. Since the beggining my plan was to minify and uglify all the scrips before putting them into production, either with RequireJS or Grunt. The dependency management between scripts is not a major problem when using Backbone and concatenating the files automatically with Grunt. So, I'll just leave things as they are now. Maybe later I will fork this version and create a RequireJS version of it.
+
+The next step is to hook the app to a database. I don't really know which type yet though. Probably gonna try a NoSQL database like MongoDB or Redis, just to get the hang of them. If I end up going for a traditional RDBMS, I'll probably use PostgreSQL since it has worked great for me in the past. Some more research on database management using node is needed to reach the final decision.
