@@ -1,200 +1,286 @@
-describe('App', function(){
-	it("provides the 'App' object and basisc app functionalities", function(){
-		// Expect exists and is an object
-		expect(window.App).to.be.an('object');
-
-		// Expect all namespace properties are present
-		expect(window.App).to.include.keys( "Config"
-		                           , "Collections"
-		                           , "Models"
-		                           , "Routers"
-		                           , "Views"
-		                           , "Regions");
-	});
+describe("App", function() {
+  return it("provides the 'App' object and basic app functionalities", function() {
+    expect(window.App).to.be.an('object');
+    return expect(window.App).to.include.keys("Config", "Collections", "Models", "Routers", "Views", "Regions");
+  });
 });
-function check(done, f){
-	try {
-		f();
-		done();
-	} catch(e) {
-		done(e);
-	}
-}
 
-describe("BDD Example", function(){
-	// Runs once before all tests starts
-	before(function(){
-		this.hello = function(){
-			return "Hello, World!";
-		};
-	});
-
-	// Runs once when all tests finish
-	after(function(){
-		this.hello = null;
-	});
-
-	it("should return expected string result", function(){
-		expect(this.hello()).to
-			.be.a("string").and
-			.equal("Hello, World!");
-	});
+describe("App.Collections.Users", function() {
+  beforeEach(function() {
+    this.server = sinon.fakeServer.create();
+    this.server.autoRespond = true;
+    return this.users = new App.Collections.Users();
+  });
+  afterEach(function() {
+    return this.server.restore();
+  });
+  describe("retrieval", function() {
+    return it("has a single user", function(done) {
+      var users;
+      users = this.users;
+      this.server.respondWith("GET", "/api/users", [
+        200, {
+          "Content-Type": "application/json"
+        }, JSON.stringify([
+          {
+            name: "Guzman Monne",
+            email: "guzmonne@hotmail.com",
+            phone: "6967896",
+            cellphone: "789456312",
+            rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+          }
+        ])
+      ]);
+      users.once("reset", function() {
+        var user;
+        expect(users).to.have.length(1);
+        user = users.at(0);
+        expect(user).to.be.ok;
+        expect(user.get("name")).to.contain("Guzman Monne");
+        expect(user.get("email")).to.contain("guzmonne@hotmail.com");
+        expect(user.get("phone")).to.contain("6967896");
+        expect(user.get("cellphone")).to.contain("789456312");
+        expect(user.get("rememberToken")).to.contain("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31");
+        expect(user.get("id")).to.be.a("number");
+        expect(user.get("createdAt")).to.be.a("Date");
+        expect(user.get("updatedAt")).to.be.a("Date");
+        return done();
+      });
+      return users.fetch({
+        reset: true
+      });
+    });
+  });
+  describe("creation", function() {
+    it("has default values", function() {
+      expect(this.users).to.be.ok;
+      return expect(this.users).to.have.length(0);
+    });
+    return it("should be empty on fetch", function(done) {
+      var users;
+      users = this.users;
+      this.server.respondWith("GET", "/api/users", [
+        200, {
+          "Content-Type": "application/json"
+        }, JSON.stringify([
+          {
+            name: "Guzman Monne",
+            email: "guzmonne@hotmail.com",
+            phone: "6967896",
+            cellphone: "789456312",
+            rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+          }
+        ])
+      ]);
+      users.once("reset", function() {
+        expect(users).to.have.length(1);
+        return done();
+      });
+      expect(users).to.have.length(0);
+      return users.fetch({
+        reset: true
+      });
+    });
+  });
+  return describe("modification", function() {
+    beforeEach(function() {
+      return this.users.add({
+        name: "Guzman Monne",
+        email: "guzmonne@hotmail.com",
+        phone: "6962030",
+        cellphone: "099750505",
+        rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+      });
+    });
+    afterEach(function() {
+      this.users = null;
+      return this.users = new App.Collections.Users;
+    });
+    it("can delete a user", function(done) {
+      var user, users;
+      users = this.users;
+      users.once("remove", function() {
+        expect(users).to.have.length(0);
+        return done();
+      });
+      user = users.shift();
+      return expect(user).to.be.ok;
+    });
+    return it("can create a second user");
+  });
 });
-describe("App.Collections.Users", function(){
-	beforeEach(function(){
-		this.server = sinon.fakeServer.create();
-		this.server.autoRespond = true;
-		this.users = new App.Collections.Users();
-	});
 
-	afterEach(function(){
-		this.server.restore();
-	});
-
-	describe("retrieval", function(){
-		it("has a single user", function(done){
-			var users = this.users, user;
-
-			// Returns a single model on GET
-			this.server.respondWith("GET", "/api/users", [
-			                        200, 
-			                        {"Content-Type": "application/json"}, 
-			                        JSON.stringify([{
-			                        	name: "Guzman Monne", 
-			                        	email: "guzmonne@hotmail.com",
-			                        	phone: "6967896", 
-			                        	cellphone: "789456312",
-			                        	rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-			                        }])
-			                        ]);
-			// After fetch
-			users.once("reset", function(){
-				expect(users).to.have.length(1);
-
-				// Check model attributes
-				user = users.at(0);
-				expect(user).to.be.ok;
-				expect(user.get("name")).to.contain("Guzman Monne");
-				expect(user.get("email")).to.contain("guzmonne@hotmail.com");
-				expect(user.get("phone")).to.contain("6967896");
-				expect(user.get("cellphone")).to.contain("789456312");
-				expect(user.get("rememberToken")).to.contain("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31");
-				expect(user.get("id")).to.be.a("number");
-				expect(user.get("createdAt")).to.be.a("Date");
-				expect(user.get("updatedAt")).to.be.a("Date");
-				done();
-			});
-
-			users.fetch({reset: true});
-		});
-	});
-
-	describe("creation", function(){
-		it("has default values", function(){
-			expect(this.users).to.be.ok;
-			expect(this.users).to.have.length(0);
-		});
-
-		it("should be empty on fetch", function(done){
-			var users = this.users;
-
-			this.server.respondWith("GET", "/api/users", [
-			                        200, 
-			                        {"Content-Type": "application/json"}, 
-			                        JSON.stringify([{
-			                        	name: "Guzman Monne", 
-			                        	email: "guzmonne@hotmail.com",
-			                        	phone: "6967896", 
-			                        	cellphone: "789456312",
-			                        	rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-			                        }])
-			                        ]);
-			
-			// "reset" event fires on successful fetch()
-			users.once("reset", function(){
-				expect(users).to.have.length(1);
-
-				// Async code has completed. Signal test is done
-				done();
-			});
-
-			expect(users).to.have.length(0);
-			
-			users.fetch({reset: true});
-		});
-	});
-
-	describe("modification", function(){
-		beforeEach(function(){
-
-			// Load a pre-existing user
-			this.users.add({
-				name: "Guzman Monne",
-				email: "guzmonne@hotmail.com",
-				phone: "6962030", 
-				cellphone: "099750505",
-				rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-			});
-		});
-
-		afterEach(function(){
-			this.users = null;
-			this.users = new App.Collections.Users;
-		});
-
-		it("has a single user", function(done){
-			var users = this.users;
-
-			this.server.respondWith("GET", "/api/users", [
-			                        200, 
-			                        {"Content-Type": "application/json"}, 
-			                        JSON.stringify([{
-			                        	name: "Guzman Monne", 
-			                        	email: "guzmonne@hotmail.com",
-			                        	phone: "6967896", 
-			                        	cellphone: "789456312",
-			                        	rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-			                        }])
-			                        ]);
-			// After fetch
-			users.once("reset", function(){
-				expect(users).to.have.length(1);
-
-				// Check model attributes
-				user = users.at(0);
-				expect(user).to.be.ok;
-				expect(user.get("name")).to.contain("Guzman Monne");
-				expect(user.get("email")).to.contain("guzmonne@hotmail.com");
-				expect(user.get("phone")).to.contain("6967896");
-				expect(user.get("cellphone")).to.contain("789456312");
-				expect(user.get("rememberToken")).to.contain("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31");
-				expect(user.get("id")).to.be.a("number");
-				expect(user.get("createdAt")).to.be.a("Date");
-				expect(user.get("updatedAt")).to.be.a("Date");
-				done();
-			});
-			//expect(users).to.have.length(2);
-			users.fetch({reset: true});
-		});
-
-		it("can delete a note", function(done){
-			var users = this.users
-				, user;
-
-			// After shift
-			users.once("remove", function(){
-				expect(users).to.have.length(0);
-				done();
-			});
-
-			// Remove and return first model
-			user = users.shift();
-			expect(user).to.be.ok;
-		});
-
-		it("can create a second note");
-	});
+describe("App.Config", function() {
+  before(function() {
+    this.router = new App.Routers.MainRouter();
+    this.config = new App.Config();
+    return this.object = {
+      "routes": "routesIndex",
+      "routes/new": "routesNew",
+      "routes/:id": "routesShow",
+      "routes/:id/edit": "routesEdit"
+    };
+  });
+  after(function() {
+    delete this.router;
+    return delete this.config;
+  });
+  describe("capitalize()", function() {
+    return it("should capitalize the first letter of a string", function() {
+      var string;
+      string = this.config.capitalize("string");
+      return expect(string).to.equal("String");
+    });
+  });
+  describe("buildRestRoutes(string: route)", function() {
+    return it("should build an object with the rest routes and the method calls", function() {
+      var result;
+      result = this.config.buildRestRoutes("routes");
+      return expect(result).to.deep.equal(this.object);
+    });
+  });
+  describe("buildRestRoutesMethods(object: restRoutes)", function() {
+    return it("should return an object with the correct methods for the route", function() {
+      var key, keys, results, _i, _len, _results;
+      results = this.config.buildRestRoutesMethods(this.object);
+      expect(results).to.be.ok;
+      keys = _.keys(results);
+      _results = [];
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        _results.push(expect(results[key]).to.be.a("function"));
+      }
+      return _results;
+    });
+  });
+  describe("buildMethodFromRoute(object: routeAndMethodPair)", function() {
+    return it("should return an object with the method and a function", function() {
+      var object, result;
+      object = {};
+      object["search/:query/p:page"] = "search";
+      result = this.config.buildMethodFromRoute(object);
+      return expect(result[object["search"]]).to.be.a("function");
+    });
+  });
+  return describe("getParameters(string: route)", function() {
+    it("should return an array with all the normal parameters", function() {
+      var result;
+      result = this.config.getParameters("search/:query/p:page");
+      return expect(result).to.be.an["instanceof"](Array).and.to.contain("query").and.to.contain("page");
+    });
+    it("should return an array with normal and splat parameters", function() {
+      var result;
+      result = this.config.getParameters("file/*path");
+      return expect(result).to.be.an["instanceof"](Array).and.to.contain("path");
+    });
+    it("should return an array with normal and optional parameters", function() {
+      var result;
+      result = this.config.getParameters("docs/:section(/:subsection)");
+      return expect(result).to.be.an["instanceof"](Array).and.to.contain("section").and.to.contain("subsection=null");
+    });
+    it("should return an array with normal, splat, and optional parameters", function() {
+      var result;
+      result = this.config.getParameters("file/:section(/:subsection)/*path");
+      return expect(result).to.be.an["instanceof"](Array).and.to.contain("section").and.to.contain("subsection=null").and.to.contain("path");
+    });
+    return it("should return an empty array if there are no parameters", function() {
+      var result;
+      result = this.config.getParameters("route/routes");
+      return expect(result).to.be.an["instanceof"](Array).and.to.be.empty;
+    });
+  });
 });
+
+describe("App.Routers.MainRouter", function() {
+  var opts;
+  opts = {
+    trigger: true,
+    replace: true
+  };
+  before(function() {
+    var route, _i, _len, _ref;
+    this.router = new App.Routers.MainRouter();
+    _ref = _.values(this.router.routes);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      route = _ref[_i];
+      sinon.stub(App.Routers.MainRouter.prototype, route);
+    }
+    this.routePairs = _.pairs(this.router.routes);
+    return this.testRoute = function(route, callback) {
+      this.router.navigate(route, opts);
+      return expect(App.Routers.MainRouter.prototype[callback]).to.have.been.calledOnce;
+    };
+  });
+  beforeEach(function() {
+    this.router = new App.Routers.MainRouter();
+    this.routerSpy = sinon.spy();
+    return this.router.on("route", this.routerSpy);
+  });
+  after(function() {
+    var pair, _i, _len, _ref, _results;
+    Backbone.history.stop();
+    _ref = this.routePairs;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      pair = _ref[_i];
+      _results.push(App.Routers.MainRouter.prototype[pair[1]].restore());
+    }
+    return _results;
+  });
+  return it("should route correctly all routes", function() {
+    var pair, _i, _len, _ref, _results;
+    _ref = this.routePairs;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      pair = _ref[_i];
+      _results.push(this.testRoute(pair[0], pair[1]));
+    }
+    return _results;
+  });
+});
+
+describe("App.Views.ClientNav", function() {
+  beforeEach(function() {
+    this.view = new App.Views.ClientNav({
+      container: this.$fixture
+    });
+    return this.view.renderIn('#fixtures');
+  });
+  afterEach(function() {
+    $('#fixtures').empty();
+    return this.view.remove();
+  });
+  describe("events", function() {
+    return it("fires events on 'view' click");
+  });
+  return describe("menu bar displays", function() {
+    it("has home nav active by default", function() {
+      expect($('#fixtures ul.nav.navbar-nav li.active')).to.have.length(1);
+      return expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-home");
+    });
+    it("activates the 'nav-about' button on click");
+    it("activates the 'nav-home' button on click");
+    return it("activates the 'nav-contact' button on click");
+  });
+});
+
+describe("App.Views.UserEdit", function() {
+  it("should prepopulate the data in the form");
+  it("should show the fields inactive");
+  it("should activate the fields on user:edit");
+  it("should swap the 'save' and 'edit' button");
+  it("should show the 'cancel' button");
+  it("should restore the values on reset");
+  it("should tell the user the data was saved correctly");
+  return it("should show the user the errors ocurred");
+});
+
+describe("App.Views.UserNew", function() {
+  it("should show an empty form");
+  it("should show the user errors after unsuccessful save");
+  return it("should be destroyed after successful save");
+});
+
 describe("App.Models.User", function(){
 	it("has default values", function(){
 		// Create empty user model
@@ -320,69 +406,6 @@ describe("App.Regions.BaseRegion", function(){
 			expect(this.baseRegion.render).to.have.been.calledOnce;
 			this.baseRegion.render.restore();
 		});
-	});
-});
-describe("App.Routers.MainRouter", function(){
-	// Default option: Trigger and replace history
-	var opts = {trigger: true, replace: true};
-
-	beforeEach(function(){
-		// Stub route methods
-		sinon.stub(App.Routers.MainRouter.prototype, "index");
-
-		// Create router with stubs and manual fakes
-		this.router =  new App.Routers.MainRouter();
-
-		// Spy on all route events
-		this.routerSpy = sinon.spy();
-		this.router.on("route", this.routerSpy);
-	});
-
-	afterEach(function(){
-		Backbone.history.stop();
-
-		App.Routers.MainRouter.prototype.index.restore();
-	});
-
-	it("can route to index", function(){
-		this.router.navigate("", opts);
-
-		// Check router method
-		expect(App.Routers.MainRouter.prototype.index).to.have.been.calledOnce;
-
-		// Check route event
-		expect(this.routerSpy).to.have.been.calledOnce;
-	});	
-});
-describe("App.Views.ClientNav", function(){
-	beforeEach(function(){
-		this.view = new App.Views.ClientNav({
-			container: this.$fixture
-		});
-		this.view.renderIn("#fixtures");
-	});
-
-	afterEach(function(){
-		$('#fixtures').empty();
-		this.view.remove();
-	});
-
-	describe("events", function(){
-		it("fires events on 'view' click");
-	});
-
-	describe("menu bar displays", function(){
-		it("has home nav active by default", function(){
-			// Check for some nav to have the 'active' tag and has 'Home' as text
-			expect($('#fixtures ul.nav.navbar-nav li.active')).to.have.length(1);
-			expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-home");
-		});
-
-		it("updates nav on 'about' click");
-
-		it("updates nav on 'home' click");
-
-		it("updates nav on 'contact' click");
 	});
 });
 describe("App.Views.UserShow", function(){

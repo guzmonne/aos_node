@@ -30,7 +30,7 @@ window.App =
 
 	start: ->
 		new App.Routers.MainRouter()
-		Backbone.history.start({pushState: true})
+		Backbone.history.start()
 
 $(document).ready ->
 	App.awake()

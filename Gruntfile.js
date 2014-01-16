@@ -1,8 +1,19 @@
 module.exports = function(grunt){
 	// Project Configuration
 	grunt.initConfig({
+		mocha: {
+			test: {
+				options: {
+					reporter: 'Spec',
+					urls: ['http://localhost:3000/test.html']
+				}
+			}
+		},
 		concurrent: {
-			srcAndSpecWatch: ['watch:src', 'watch:spec']
+			options: {
+      	logConcurrentOutput: true
+      },
+			watch: ['watch:src', 'watch:spec']
 		},
 		jshint: {
 			test: {
@@ -25,11 +36,16 @@ module.exports = function(grunt){
 							,	'handlebars'
 							,	'concat:handlebars'
 							,	'concat:client'
-							,	'clean:cleanClientBuild']
+							,	'clean:cleanClientBuild'
+							, 'mocha:test']
 			},
 			spec: {
-				files: ['test/javascripts/spec/*'],
-				tasks: ['concat:specs']
+				files: ['test/javascripts/spec/*.spec.js', 'test/javascripts/spec/*.spec.coffee'],
+				tasks: ['concat:js_specs', 'concat:coffee_specs', 'coffee:specs', 'concat:all_specs', 'clean:specs', 'mocha:test']
+			},
+			test: {
+				files: ['test/javascripts/allspecs.spec.js'],
+				tasks: ['mocha:test']
 			}
 		},
 		clean: {
@@ -48,8 +64,12 @@ module.exports = function(grunt){
 												, 'public/javascripts/regions.coffee'
 												, 'public/javascripts/routers.coffee'
 												, 'public/javascripts/app.js'
+												, 'public/javascripts/config.js'
 												],
-			jsOnSrc: ['src/**/*.js']
+			jsOnSrc: ['src/**/*.js'],
+			specs: ['test/javascripts/allspecs.spec.coffeescripts.js'
+						,	'test/javascripts/allspecs.spec.javascripts.js'
+						, 'test/javascripts/allspecs.spec.coffeescripts.coffee']
 		},
 		concat: {
 			options: {
@@ -80,7 +100,8 @@ module.exports = function(grunt){
 				dest: "public/javascripts/routers.coffee"
 			},
 			client: {
-				src: ["public/javascripts/app.js" 
+				src: ["public/javascripts/app.js"
+						, "public/javascripts/config.js" 
 						, "public/javascripts/templates.js"
 						, "public/javascripts/models.js"
 						, "public/javascripts/collections.js"
@@ -89,8 +110,17 @@ module.exports = function(grunt){
 						, "public/javascripts/routers.js"],
 				dest: 'public/javascripts/client.js'
 			},
-			specs: {
+			js_specs: {
 				src: ['test/javascripts/spec/*.spec.js'],
+				dest: 'test/javascripts/allspecs.spec.javascripts.js'
+			},
+			coffee_specs: {
+				src: ['test/javascripts/spec/*.spec.coffee'],
+				dest: 'test/javascripts/allspecs.spec.coffeescripts.coffee'
+			},
+			all_specs: {
+				src: ['test/javascripts/allspecs.spec.coffeescripts.js'
+						,	'test/javascripts/allspecs.spec.javascripts.js'],
 				dest: 'test/javascripts/allspecs.spec.js'
 			}
 		},
@@ -101,12 +131,21 @@ module.exports = function(grunt){
 				},
 				files: {
 					'public/javascripts/app.js': 'src/app.coffee',
+					'public/javascripts/config.js': 'src/config.coffee',
 					'public/javascripts/models.js': 'public/javascripts/models.coffee',
 					'public/javascripts/collections.js': 'public/javascripts/collections.coffee',
 					'public/javascripts/regions.js': 'public/javascripts/regions.coffee',
 					'public/javascripts/views.js': 'public/javascripts/views.coffee',
 					'public/javascripts/routers.js': 'public/javascripts/routers.coffee',
 				}	
+			},
+			specs: {
+				options: {
+					bare: true
+				},
+				files: {
+					'test/javascripts/allspecs.spec.coffeescripts.js': 'test/javascripts/allspecs.spec.coffeescripts.coffee'
+				}
 			}
 		}, 
 		handlebars: {
@@ -135,6 +174,7 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-concurrent');
+	grunt.loadNpmTasks('grunt-mocha');
 
 	// Tasks
 	grunt.registerTask('default', [ 'clean' 
