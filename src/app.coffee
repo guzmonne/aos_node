@@ -8,19 +8,22 @@ window.App =
 	Config: {}
 
 	vent: _.extend({}, Backbone.Events)
+	# =======
 	# Regions
-	# -------
-	headerRegion: null
+	# =======
+	headerRegion : null
 	contentRegion: null
-	footerRegion: null 
+	footerRegion : null 
+	# ======
 	# Models
-	# ------
+	# ======
 	appDetails: null
-
+	session   : null
 	awake: ->
 		# Initialize Models
 		# -----------------
 		@appDetails = new App.Models.Application()
+		@session    = new App.Models.Session()
 		# Initialize Regions
 		# ------------------
 		@headerRegion  = new App.Regions.HeaderRegion()
@@ -29,8 +32,9 @@ window.App =
 		App.start()
 
 	start: ->
-		new App.Routers.MainRouter()
-		Backbone.history.start()
+		@session.getAuth (response) ->
+			new App.Routers.MainRouter()
+			Backbone.history.start()
 
 $(document).ready ->
 	App.awake()

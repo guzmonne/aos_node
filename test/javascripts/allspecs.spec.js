@@ -110,6 +110,29 @@ describe("App.Collections.Users", function() {
   });
 });
 
+describe("App.Models.Session", function() {
+  before(function() {
+    return this.model = new App.Models.Session();
+  });
+  describe("login(object: credentials)", function() {
+    it("should send a POST request with the given credentials");
+    it("sholud set the user and authenticate it");
+    it("should redirect the user back to where he came or to the index");
+    return it("should redirect to the login page if the call failed");
+  });
+  describe("logout(function: callback)", function() {
+    it("should send a DELETE request");
+    it("should clear the session data");
+    it("should update the csrf value");
+    return it("should run a callback at the end");
+  });
+  return describe("getAuth(function: callback)", function() {
+    it("should fetch and set the session values");
+    it("should clear the session values and update the session if the user is not authorized");
+    return it("should run a callback function at the end");
+  });
+});
+
 describe("App.Config", function() {
   before(function() {
     this.router = new App.Routers.MainRouter();
@@ -239,6 +262,41 @@ describe("App.Routers.MainRouter", function() {
   });
 });
 
+describe("App.Views.BaseView", function() {
+  beforeEach(function() {
+    return this.view = new App.Views.BaseView();
+  });
+  afterEach(function() {
+    return delete this.view;
+  });
+  it("should contain an innverViews array", function() {
+    return expect(this.view.innerViews).to.be["instanceof"](Array);
+  });
+  describe("close()", function() {
+    return it("should call the onClose function once", function() {
+      this.onClose = sinon.spy(this.view, "onClose");
+      this.view.close();
+      return expect(this.onClose).to.have.been.calledOnce;
+    });
+  });
+  return describe("onClose()", function() {
+    return it("should call the close() method on the appended views", function() {
+      var appendedView1, appendedView2, closeSpy1, closeSpy2;
+      appendedView1 = new App.Views.ContentView();
+      appendedView2 = new App.Views.ContentView();
+      closeSpy1 = sinon.spy(appendedView1, "close");
+      closeSpy2 = sinon.spy(appendedView2, "close");
+      this.view.innerViews.push(appendedView1);
+      this.view.innerViews.push(appendedView2);
+      expect(appendedView1.innerViews).to.be.empty;
+      expect(appendedView2.innerViews).to.be.empty;
+      this.view.onClose();
+      expect(closeSpy1).to.have.been.calledOnce;
+      return expect(closeSpy2).to.have.been.calledOnce;
+    });
+  });
+});
+
 describe("App.Views.ClientNav", function() {
   beforeEach(function() {
     this.view = new App.Views.ClientNav({
@@ -256,7 +314,7 @@ describe("App.Views.ClientNav", function() {
   return describe("menu bar displays", function() {
     it("has home nav active by default", function() {
       expect($('#fixtures ul.nav.navbar-nav li.active')).to.have.length(1);
-      return expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-home");
+      return expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-login");
     });
     it("activates the 'nav-about' button on click");
     it("activates the 'nav-home' button on click");

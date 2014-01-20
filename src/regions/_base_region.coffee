@@ -7,7 +7,7 @@ class App.Regions.BaseRegion extends Backbone.View
 		if options.currentView? then @currentView = options.currentView
 
 	swapCurrentView: (newView) ->
-		if @currentView then @currentView.remove()
+		if @currentView then @currentView.close()
 		@currentView = newView
 
 	swapAndRenderCurrentView: (newView) ->

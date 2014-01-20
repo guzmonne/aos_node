@@ -130,13 +130,13 @@ module.exports = function(grunt){
 					bare: true
 				},
 				files: {
-					'public/javascripts/app.js': 'src/app.coffee',
-					'public/javascripts/config.js': 'src/config.coffee',
-					'public/javascripts/models.js': 'public/javascripts/models.coffee',
+					'public/javascripts/app.js'        : 'src/app.coffee',
+					'public/javascripts/config.js'     : 'src/config.coffee',
+					'public/javascripts/models.js'     : 'public/javascripts/models.coffee',
 					'public/javascripts/collections.js': 'public/javascripts/collections.coffee',
-					'public/javascripts/regions.js': 'public/javascripts/regions.coffee',
-					'public/javascripts/views.js': 'public/javascripts/views.coffee',
-					'public/javascripts/routers.js': 'public/javascripts/routers.coffee',
+					'public/javascripts/regions.js'    : 'public/javascripts/regions.coffee',
+					'public/javascripts/views.js'      : 'public/javascripts/views.coffee',
+					'public/javascripts/routers.js'    : 'public/javascripts/routers.coffee',
 				}	
 			},
 			specs: {
@@ -146,6 +146,17 @@ module.exports = function(grunt){
 				files: {
 					'test/javascripts/allspecs.spec.coffeescripts.js': 'test/javascripts/allspecs.spec.coffeescripts.coffee'
 				}
+			},
+			require: {
+				options: {
+					bare: true
+				},
+				expand : true,
+				flatten: false,
+				cwd    : 'src/',
+				src    : ['**/*.coffee'],
+				dest   : 'public/javascripts/',
+				ext    : '.js'
 			}
 		}, 
 		handlebars: {

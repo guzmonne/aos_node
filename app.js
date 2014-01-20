@@ -1,17 +1,20 @@
-
-/**
- * Module dependencies.
- */
-
+// ===================
+// MODULE DEPENDENCIES
+// ===================
 var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var toobusy = require('toobusy');
+// Session management using Redis
+var RedisStore = require('connect-redis')(express);
 
 var app = express();
 
-// all environments
+// ===============
+// ALL ENVIROMENTS
+// ===============
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -20,28 +23,82 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
-app.use(express.cookieParser('B4n4n3r4$'));
-app.use(express.session());
+app.use(express.cookieParser());
+app.use(express.session({
+	store: new RedisStore({
+		host: 'localhost',
+		port: 6379,
+		db  : 2,
+		pass: 'M4nz4n0$P0dr1d0Z'
+		}),
+	secret: 'B4n4n3r4$'
+}));
+app.use(express.csrf());
 app.use(app.router);
+app.use(function(req, res, next){
+	res.setHeader('X-CSRF-Token', req.csrfToken());
+	next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
+// ================
+// DEVELOPMENT ONLY
+// ================
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
   app.use(express.static(path.join(__dirname, '/test')));
 }
 
-app.get('/', routes.index);
-app.get('/api/users', function(req, res){
-	res.json({
-		name: "Guzman Monne",
-		email: "guzmonne@hotmail.com",
-		phone: "6962030",
-		cellphone: "099750505",
-		rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-	});
+// middleware wich blocks requests when we're too busy
+app.use(function(req, res, next){
+	if (toobusy()){
+		res.send(503, "I'm too busy right now, sorry for the inconvenience.");
+	} else {
+		next();
+	}
 });
 
+// ==========
+// MAIN ROUTE
+// ==========
+app.get('/', routes.index);
+
+// ==========
+// API ROUTES
+// ==========
+app.get('/api/users', user.all);
+app.get('/api/users/:id', Auth, user.get); // Using the Auth filter for this route
+
+// ==============
+// SESSION ROUTES
+// ==============
+app.get('/session', routes.session);
+app.post('/session/login', routes.login);
+app.del('/session/logout', routes.logout);
+
+// =============
+// DEFAULT ROUTE
+// =============
+app.use(function(req, res){
+  res.render('404', { 
+  	title: 'AOS', 
+  });
+});
+
+// =============
+// ROUTE FILTERS
+// =============
+// Authentication Filter
+// ---------------------
+function Auth (req, res, next){
+	if (req.session.user){
+		next();
+	} else {
+		res.send(401, {
+			flash: "Please log in first."
+		});
+	}
+}
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

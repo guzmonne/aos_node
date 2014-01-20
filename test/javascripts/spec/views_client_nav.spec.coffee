@@ -14,7 +14,7 @@ describe "App.Views.ClientNav", ->
 		it "has home nav active by default", ->
 			# Check for some nav to have the 'active' tag is the 'Home' tag
 			expect($('#fixtures ul.nav.navbar-nav li.active')).to.have.length 1
-			expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-home")
+			expect($('#fixtures ul.nav.navbar-nav li.active a').attr("id")).to.equal("nav-login")
 
 		it "activates the 'nav-about' button on click" 
 		it "activates the 'nav-home' button on click" 
