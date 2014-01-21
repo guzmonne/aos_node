@@ -50,7 +50,7 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		if App.session.get "authenticated"
 			header = new App.Views.AppNav({model: App.session})
 		else
-			header = new App.Views.ClientNav()
+			header = new App.Views.ClientNav({model: App.appDetails})
 		App.headerRegion.swapAndRenderCurrentView(header)
 		App.footerRegion.swapAndRenderCurrentView(footer)
 
@@ -66,17 +66,14 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# Route Handlers
 	# ==============
 	index: ->
-		console.log "Index page"
-		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView)
+		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({model: {}}))
 		App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({model: App.session}))
 
 	default: ->
-		console.log "Not existant page"
 		Backbone.history.navigate '', {trigger: true}
 
 	login: ->
-		console.log "Login page"
-		App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav())
+		App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav({model: App.appDetails}))
 		App.contentRegion.swapAndRenderCurrentView(new App.Views.Login({model: App.session}))
 
 	profile: ->

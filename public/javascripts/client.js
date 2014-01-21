@@ -168,7 +168,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"row vertical-offset-100\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Iniciar Sesión</h3>\n	 	</div>\n			<div class=\"panel-body\">\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"text\">\n					</div>\n					<div class=\"form-group\">\n						<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n					</div>\n					<hr>\n					<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Login\">\n				</fieldset>\n					</form>\n			</div>\n	</div>\n</div>";
+  return "<div class=\"row vertical-offset-100\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Iniciar Sesión</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"text\">\n					</div>\n					<div class=\"form-group\">\n						<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n					</div>\n					<hr>\n					<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Login\">\n				</fieldset>\n					</form>\n			</div>\n	</div>\n</div>\n";
   });
 var _ref, _ref1, _ref2,
   __hasProp = {}.hasOwnProperty,
@@ -497,24 +497,39 @@ App.Views.BaseView = (function(_super) {
     if (this.awake) {
       this.awake();
     }
-    this.innerViews = [];
-    if (this.model == null) {
-      return this.model = App.appDetails;
-    }
+    return this.innerViews = [];
   };
 
   BaseView.prototype.render = function() {
-    $(this.el).html(this.template(this.model.toJSON()));
+    var model;
+    if (_.isFunction(this.beforeRender)) {
+      this.beforeRender();
+    }
+    if (this.model) {
+      model = this.model.attributes;
+    } else {
+      model = {};
+    }
+    $(this.el).html(this.template(model));
     return this;
   };
 
   BaseView.prototype.renderIn = function(container) {
-    $(container).html(this.template(this.model.attributes));
+    var model;
+    if (this.model) {
+      model = this.model.attributes;
+    } else {
+      model = {};
+    }
+    $(container).html(this.template(model));
     return this;
   };
 
   BaseView.prototype.close = function() {
-    if (this.onClose) {
+    if (_.isFunction(this.beforeClose)) {
+      this.beforeClose();
+    }
+    if (_.isFunction(this.onClose)) {
       this.onClose();
     }
     return this.remove();
@@ -655,6 +670,14 @@ App.Views.Login = (function(_super) {
     return this.model.login(credentials);
   };
 
+  Login.prototype.beforeRender = function() {
+    return $('body').addClass('snowbg');
+  };
+
+  Login.prototype.beforeClose = function() {
+    return $('body').removeClass('snowbg');
+  };
+
   return Login;
 
 })(App.Views.BaseView);
@@ -760,7 +783,9 @@ App.Routers.MainRouter = (function(_super) {
         model: App.session
       });
     } else {
-      header = new App.Views.ClientNav();
+      header = new App.Views.ClientNav({
+        model: App.appDetails
+      });
     }
     App.headerRegion.swapAndRenderCurrentView(header);
     return App.footerRegion.swapAndRenderCurrentView(footer);
@@ -777,23 +802,24 @@ App.Routers.MainRouter = (function(_super) {
   };
 
   MainRouter.prototype.index = function() {
-    console.log("Index page");
-    App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView);
+    App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({
+      model: {}
+    }));
     return App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({
       model: App.session
     }));
   };
 
   MainRouter.prototype["default"] = function() {
-    console.log("Not existant page");
     return Backbone.history.navigate('', {
       trigger: true
     });
   };
 
   MainRouter.prototype.login = function() {
-    console.log("Login page");
-    App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav());
+    App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav({
+      model: App.appDetails
+    }));
     return App.contentRegion.swapAndRenderCurrentView(new App.Views.Login({
       model: App.session
     }));

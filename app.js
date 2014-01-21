@@ -7,6 +7,7 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 var toobusy = require('toobusy');
+var config = require('./config.js');
 // Session management using Redis
 var RedisStore = require('connect-redis')(express);
 
@@ -26,12 +27,12 @@ app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.session({
 	store: new RedisStore({
-		host: 'localhost',
-		port: 6379,
-		db  : 2,
-		pass: 'M4nz4n0$P0dr1d0Z'
-		}),
-	secret: 'B4n4n3r4$'
+		host: config.session.redis.host,
+		port: config.session.redis.port,
+		db  : config.session.redis.db,
+		pass: config.session.redis.pass
+	}),
+	secret: config.session.secret 
 }));
 app.use(express.csrf());
 app.use(app.router);

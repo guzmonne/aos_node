@@ -10,3 +10,9 @@ class App.Views.Login extends App.Views.BaseView
 			email   : $('[name=email]').val()
 			password: $('[name=password]').val()
 		@model.login(credentials)
+
+	beforeRender: ->
+		$('body').addClass('snowbg')
+
+	beforeClose: ->
+		$('body').removeClass('snowbg')

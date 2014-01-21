@@ -5,18 +5,21 @@ class App.Views.BaseView extends Backbone.View
 	initialize: ->
 		if @awake then @awake()
 		@innerViews = []
-		unless @model? then @model = App.appDetails
 
 	render: ->
-		$(@el).html(@template(@model.toJSON()))
+		if _.isFunction @beforeRender then @beforeRender()
+		if @model then model = @model.attributes else model = {}
+		$(@el).html(@template(model))
 		this
 
 	renderIn: (container) ->
-		$(container).html(@template(@model.attributes));
+		if @model then model = @model.attributes else model = {}
+		$(container).html(@template(model));
 		this
 
 	close: ->
-		if @onClose then @onClose()
+		if _.isFunction @beforeClose then @beforeClose()
+		if _.isFunction @onClose then @onClose()
 		@remove()
 
 	onClose: ->

@@ -174,7 +174,20 @@ module.exports = function(grunt){
 					}
 				]
 			}
-		}
+		},
+		imagemin: {                        
+	    jpg: {                         
+	      options: {                      
+	        progressive: true
+	      },
+	      files: [{
+	        expand: true,
+	        cwd: 'public/images/raw',                
+	        src: ['*.jpg'],  
+	        dest: 'public/images'                
+      	}]
+	    }
+	  }
 	});
 
 	// Load plugins
@@ -183,6 +196,7 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
+	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-concurrent');
 	grunt.loadNpmTasks('grunt-mocha');
@@ -202,4 +216,5 @@ module.exports = function(grunt){
 
 	grunt.registerTask('compileHandlebars', ['handlebars:compile']);
 	grunt.registerTask('watchTasks', ['concurrent:srcAndSpecWatch']);
+	grunt.registerTask('imagejpg', ['imagemin:jpg']);
 }
