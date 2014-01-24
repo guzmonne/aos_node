@@ -1,11 +1,11 @@
 window.App = 
-	Models: {}
+	Models     : {}
 	Collections: {}
-	Routers: {}
-	Views: {}
-	Regions: {}
-	Mixins: {}
-	Config: {}
+	Routers    : {}
+	Views      : {}
+	Regions    : {}
+	Mixins     : {}
+	Config     : {}
 
 	vent: _.extend({}, Backbone.Events)
 	# =======

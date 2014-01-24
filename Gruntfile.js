@@ -37,14 +37,16 @@ module.exports = function(grunt){
 							,	'concat:handlebars'
 							,	'concat:client'
 							,	'clean:cleanClientBuild'
-							, 'mocha:test']
+							//, 'mocha:test'
+							]
 			},
 			spec: {
 				files: ['test/javascripts/spec/*.spec.js', 'test/javascripts/spec/*.spec.coffee'],
-				tasks: ['concat:js_specs', 'concat:coffee_specs', 'coffee:specs', 'concat:all_specs', 'clean:specs', 'mocha:test']
+				//tasks: ['concat:js_specs', 'concat:coffee_specs', 'coffee:specs', 'concat:all_specs', 'clean:specs', 'mocha:test']
+				tasks: ['concat:js_specs', 'concat:coffee_specs', 'coffee:specs', 'concat:all_specs', 'clean:specs']
 			},
 			test: {
-				files: ['test/javascripts/allspecs.spec.js'],
+				files: ['test/javascripts/allspecs.spec.js', 'public/javascripts/client.js'],
 				tasks: ['mocha:test']
 			}
 		},
