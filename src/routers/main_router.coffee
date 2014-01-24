@@ -1,7 +1,7 @@
 class App.Routers.MainRouter extends App.Routers.BaseRouter 
 	routes:
 		'login'								:	'login'
-		'profile'							: 'profile'
+		'register'						: 'register'
 		''										: 'index'
 		'*path'								:	'default'
 
@@ -9,7 +9,6 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# Rutes that needs authentication:
 	# ================================
 	requiresAuth: [
-		"#profile"
 		""
 	]
 
@@ -31,24 +30,21 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		if needAuth and !isAuth
 			# We save the path to return the user to where he intended to go
 			# before being redirected to the login page
-			console.log "Page needs auhthorization and user is not authenticated"
 			App.session.set "redirectFrom", path
 			Backbone.history.navigate 'login', {trigger: true}
 		else if isAuth and cancelAccess
-			console.log "User is authenticated so he can't access this page"
 			# User is authenticated and tries to go to a page only available
 			# to un-authenticated users
 			Backbone.history.navigate '', {trigger: true}
 		else
-			console.log "Any user can see this page or the User is authenticated"
 			# No problem, let him pass
 			return next()
 
 	after: (params) ->
-		return if App.headerRegion.currentView? and App.footerRegion.currentView?
-		footer = new App.Views.ClientFooter()
+		return if (App.headerRegion.currentView? and App.footerRegion.currentView?)
+		footer = new App.Views.ClientFooter({model: App.appDetails})
 		if App.session.get "authenticated"
-			header = new App.Views.AppNav({model: App.session})
+			header = new App.Views.AppNav({model: App.user})
 		else
 			header = new App.Views.ClientNav({model: App.appDetails})
 		App.headerRegion.swapAndRenderCurrentView(header)
@@ -66,8 +62,8 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# Route Handlers
 	# ==============
 	index: ->
-		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({model: {}}))
-		App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({model: App.session}))
+		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({model: App.user}))
+		App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({model: App.user}))
 
 	default: ->
 		Backbone.history.navigate '', {trigger: true}
@@ -76,6 +72,7 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav({model: App.appDetails}))
 		App.contentRegion.swapAndRenderCurrentView(new App.Views.Login({model: App.session}))
 
-	profile: ->
+	register: ->
+		App.contentRegion.swapAndRenderCurrentView(new App.Views.Register({model: new App.Models.User()}))
 
 

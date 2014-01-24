@@ -47,6 +47,7 @@ class App.Models.Session extends Backbone.Model
 			data: credentials
 			type: 'POST'
 		login.done (response) =>
+			App.user.set response
 			@set "authenticated", true
 			@set "user", JSON.stringify(response.user);
 			if @get "redirectFrom"
@@ -76,7 +77,7 @@ class App.Models.Session extends Backbone.Model
 
 		Session.done (response) =>
 			@set "authenticated", true
-			@set "user", JSON.stringify(response.user)
+			App.user.set response
 
 		Session.fail (response) =>
 			response = JSON.parse response.responseText

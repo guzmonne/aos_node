@@ -1,3 +1,6 @@
+// ===================
+// MODULE DEPENDENCIES
+// ===================
 var uid = require('uid2');
 
 exports.index = function(req, res){
@@ -12,7 +15,11 @@ exports.session = function(req, res){
 	if (req.session.user){
 		res.send(200, {
 			auth: true,
-			user: req.session.user
+			username : req.session.user.username,
+			firstName: req.session.user.firstname,
+			lastName : req.session.user.lastname,
+			email    : req.session.user.email,
+			username : req.session.user.username,
 		});
 	}	else {
 		res.send(401, {
@@ -22,21 +29,17 @@ exports.session = function(req, res){
 	}
 };
 
-exports.login = function (req, res) {
-	var email = req.body.email;
-	var password = req.body.password;
-	for (var i = 0; i < Users.length; i++){
-		var user = Users[i];
-		console.log("User Email: " + user.email, "User Pass: " + user.password);
-		if (user.email == email && user.password == password){
-			req.session.user = user;
-			return res.send(200, {
-				auth: true,
-				user: user
-			});
-		}
-	};
-	return res.send(401);
+exports.login = function(req, res, next) {
+  var userSession = {
+		username : req.user.username,
+		firstName: req.user.firstname,
+		lastName : req.user.lastname,
+		email    : req.user.email,
+		username : req.user.username,
+		auth     : true
+  }
+  req.session.user = req.user;
+  return res.send(200, userSession);
 };
 
 exports.logout = function (req, res){
@@ -49,23 +52,3 @@ exports.logout = function (req, res){
 		csrf: req.csrfToken()
 	});
 };
-
-// ==============
-// DUMMY DATABASE
-// ==============
-var Users = [
-	{
-		firstName: 'Guzman',
-		lastName : 'Monne',
-		password : 'pass',
-		email    : 'guzmonne@hotmail.com',
-		id       : 1
-  },
-  {
-		firstName: 'Emilia',
-		lastName : 'Cerviño',
-		password : 'pass',
-		email    : 'maemilia4@hotmail.com',
-		id       : 2	
-  }
-];

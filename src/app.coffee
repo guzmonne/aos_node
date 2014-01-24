@@ -19,11 +19,13 @@ window.App =
 	# ======
 	appDetails: null
 	session   : null
+	user			: null
 	awake: ->
 		# Initialize Models
 		# -----------------
 		@appDetails = new App.Models.Application()
 		@session    = new App.Models.Session()
+		@user				= new App.Models.User()
 		# Initialize Regions
 		# ------------------
 		@headerRegion  = new App.Regions.HeaderRegion()

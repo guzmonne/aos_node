@@ -12,9 +12,11 @@ window.App = {
   footerRegion: null,
   appDetails: null,
   session: null,
+  user: null,
   awake: function() {
     this.appDetails = new App.Models.Application();
     this.session = new App.Models.Session();
+    this.user = new App.Models.User();
     this.headerRegion = new App.Regions.HeaderRegion();
     this.contentRegion = new App.Regions.ContentRegion();
     this.footerRegion = new App.Regions.FooterRegion();
@@ -170,16 +172,47 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   return "<div class=\"row vertical-offset-100\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Iniciar Sesión</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"text\">\n					</div>\n					<div class=\"form-group\">\n						<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n					</div>\n					<hr>\n					<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Login\">\n				</fieldset>\n					</form>\n			</div>\n	</div>\n</div>\n";
   });
-var _ref, _ref1, _ref2,
+this["HBS"] = this["HBS"] || {};
+
+this["HBS"]["src/templates/register.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"row vertical-offset-100\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Nuevo Usuario</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"User Name\" name=\"username\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"First Name\" name=\"firstname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"Last Name\" name=\"lastname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"email\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n						</div>\n						<hr>\n						<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Login\">\n					</fieldset>\n				</form>\n			</div>\n	</div>\n</div>\n";
+  });
+var _ref, _ref1, _ref2, _ref3,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+App.Models.BaseModel = (function(_super) {
+  __extends(BaseModel, _super);
+
+  function BaseModel() {
+    _ref = BaseModel.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  BaseModel.prototype.url = function() {
+    var u;
+    u = this.urlRoot;
+    if (this.id) {
+      u = u + ("/" + this.id);
+    }
+    return u;
+  };
+
+  return BaseModel;
+
+})(Backbone.Model);
 
 App.Models.Application = (function(_super) {
   __extends(Application, _super);
 
   function Application() {
-    _ref = Application.__super__.constructor.apply(this, arguments);
-    return _ref;
+    _ref1 = Application.__super__.constructor.apply(this, arguments);
+    return _ref1;
   }
 
   Application.prototype.defaults = function() {
@@ -199,8 +232,8 @@ App.Models.Session = (function(_super) {
   __extends(Session, _super);
 
   function Session() {
-    _ref1 = Session.__super__.constructor.apply(this, arguments);
-    return _ref1;
+    _ref2 = Session.__super__.constructor.apply(this, arguments);
+    return _ref2;
   }
 
   Session.prototype.url = '/session';
@@ -266,6 +299,7 @@ App.Models.Session = (function(_super) {
     });
     login.done(function(response) {
       var path;
+      App.user.set(response);
       _this.set("authenticated", true);
       _this.set("user", JSON.stringify(response.user));
       if (_this.get("redirectFrom")) {
@@ -309,7 +343,7 @@ App.Models.Session = (function(_super) {
     Session = this.fetch();
     Session.done(function(response) {
       _this.set("authenticated", true);
-      return _this.set("user", JSON.stringify(response.user));
+      return App.user.set(response);
     });
     Session.fail(function(response) {
       var csrf;
@@ -333,33 +367,11 @@ App.Models.User = (function(_super) {
   __extends(User, _super);
 
   function User() {
-    _ref2 = User.__super__.constructor.apply(this, arguments);
-    return _ref2;
+    _ref3 = User.__super__.constructor.apply(this, arguments);
+    return _ref3;
   }
 
-  User.prototype.urlRoot = '/users';
-
-  User.prototype.url = function() {
-    var u;
-    u = this.urlRoot;
-    if (this.id) {
-      u = u + ("/" + this.id);
-    }
-    return u;
-  };
-
-  User.prototype.defaults = function() {
-    return {
-      id: Math.floor((Math.random() * 100) + 1),
-      name: "",
-      email: "",
-      phone: "",
-      cellphone: "",
-      rememberToken: "",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-  };
+  User.prototype.urlRoot = '/api/users';
 
   return User;
 
@@ -479,7 +491,7 @@ App.Regions.HeaderRegion = (function(_super) {
 
 })(App.Regions.BaseRegion);
 
-var _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
+var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -567,12 +579,9 @@ App.Views.AppNav = (function(_super) {
     'click #nav-logout': 'logout'
   };
 
-  AppNav.prototype.render = function() {
-    $(this.el).html(this.template(this.model.get("user")));
-    return this;
+  AppNav.prototype.awake = function() {
+    return this.listenTo(App.user, "change", this.render());
   };
-
-  AppNav.prototype.awake = function() {};
 
   AppNav.prototype.toggleActiveButton = function(e) {
     var id;
@@ -682,6 +691,50 @@ App.Views.Login = (function(_super) {
 
 })(App.Views.BaseView);
 
+App.Views.Register = (function(_super) {
+  __extends(Register, _super);
+
+  function Register() {
+    _ref6 = Register.__super__.constructor.apply(this, arguments);
+    return _ref6;
+  }
+
+  Register.prototype.template = HBS['src/templates/register.hbs'];
+
+  Register.prototype.events = {
+    "submit form": "register"
+  };
+
+  Register.prototype.awake = function() {
+    this.listenTo(this.model, "sync", this.handleSuccess);
+    return this.listenTo(this.model, "error", this.handleError);
+  };
+
+  Register.prototype.register = function(e) {
+    var attributes;
+    e.preventDefault();
+    attributes = {
+      username: $('[name=username]').val(),
+      firstname: $('[name=firstname]').val(),
+      lastName: $('[name=lastname]').val(),
+      email: $('[name=email]').val(),
+      password: $('[name=password]').val()
+    };
+    return this.model.save(attributes);
+  };
+
+  Register.prototype.handleSuccess = function(model, response, options) {
+    return console.log("Success");
+  };
+
+  Register.prototype.handleError = function(model, xhr, options) {
+    return console.log("Error");
+  };
+
+  return Register;
+
+})(App.Views.BaseView);
+
 var _ref, _ref1,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -740,12 +793,12 @@ App.Routers.MainRouter = (function(_super) {
 
   MainRouter.prototype.routes = {
     'login': 'login',
-    'profile': 'profile',
+    'register': 'register',
     '': 'index',
     '*path': 'default'
   };
 
-  MainRouter.prototype.requiresAuth = ["#profile", ""];
+  MainRouter.prototype.requiresAuth = [""];
 
   MainRouter.prototype.preventAccessWhenAuth = ["#login"];
 
@@ -756,18 +809,15 @@ App.Routers.MainRouter = (function(_super) {
     needAuth = _.contains(this.requiresAuth, path);
     cancelAccess = _.contains(this.preventAccessWhenAuth, path);
     if (needAuth && !isAuth) {
-      console.log("Page needs auhthorization and user is not authenticated");
       App.session.set("redirectFrom", path);
       return Backbone.history.navigate('login', {
         trigger: true
       });
     } else if (isAuth && cancelAccess) {
-      console.log("User is authenticated so he can't access this page");
       return Backbone.history.navigate('', {
         trigger: true
       });
     } else {
-      console.log("Any user can see this page or the User is authenticated");
       return next();
     }
   };
@@ -777,10 +827,12 @@ App.Routers.MainRouter = (function(_super) {
     if ((App.headerRegion.currentView != null) && (App.footerRegion.currentView != null)) {
       return;
     }
-    footer = new App.Views.ClientFooter();
+    footer = new App.Views.ClientFooter({
+      model: App.appDetails
+    });
     if (App.session.get("authenticated")) {
       header = new App.Views.AppNav({
-        model: App.session
+        model: App.user
       });
     } else {
       header = new App.Views.ClientNav({
@@ -803,10 +855,10 @@ App.Routers.MainRouter = (function(_super) {
 
   MainRouter.prototype.index = function() {
     App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({
-      model: {}
+      model: App.user
     }));
     return App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({
-      model: App.session
+      model: App.user
     }));
   };
 
@@ -825,7 +877,11 @@ App.Routers.MainRouter = (function(_super) {
     }));
   };
 
-  MainRouter.prototype.profile = function() {};
+  MainRouter.prototype.register = function() {
+    return App.contentRegion.swapAndRenderCurrentView(new App.Views.Register({
+      model: new App.Models.User()
+    }));
+  };
 
   return MainRouter;
 

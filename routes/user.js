@@ -1,4 +1,13 @@
-exports.all = function(req, res){
+// ===================
+// MODULE DEPENDENCIES
+// ===================
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+
+// ==================
+// CONTROLLER METHODS
+// ==================
+exports.index = function(req, res){
   res.json({
 		name: "Guzman Monne",
 		email: "guzmonne@hotmail.com",
@@ -8,7 +17,7 @@ exports.all = function(req, res){
 	});
 };
 
-exports.get = function(req, res){
+exports.show = function(req, res){
 	var id = req.params.id;
 
 	for(var i = 0; i < Users.length; i++){
@@ -19,22 +28,24 @@ exports.get = function(req, res){
 	return res.send(400);
 };
 
-// ==============
-// DUMMY DATABASE
-// ==============
-var Users = [
-	{
-		firstName: 'Guzman',
-		lastName : 'Monne',
-		password : 'pass',
-		email    : 'guzmonne@hotmail.com',
-		id       : 1
-  },
-  {
-		firstName: 'Emilia',
-		lastName : 'Cerviño',
-		password : 'pass',
-		email    : 'maemilia4@hotmail.com',
-		id       : 2	
-  }
-];
+exports.create = function(req, res){
+	var params = {
+		username  : req.body.username,
+		firstname : req.body.firstname,
+		lastname  : req.body.lastName,
+		email     : req.body.email,
+		password  : req.body.password,
+		createdBy : "root"
+	};
+	var user = new User(params);
+	user.save(function(err){
+		if (err){
+			return res.send(400, {
+				error: utils.errors(err.errors),
+				user : user,
+				title: 'Sign Up'
+			});
+		}
+	});
+	return res.send(200, user);
+};

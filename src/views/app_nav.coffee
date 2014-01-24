@@ -5,12 +5,8 @@ class App.Views.AppNav extends App.Views.BaseView
 		'click ul.nav.navbar-nav li a': 'toggleActiveButton'
 		'click #nav-logout'           : 'logout'
 
-	render: ->
-		$(@el).html(@template(@model.get("user")))
-		this
-
 	awake: ->
-		#console.log @model.attributes
+		@listenTo App.user, "change", @render()
 
 	toggleActiveButton: (e) ->
 		id = '#' + e.target.id
