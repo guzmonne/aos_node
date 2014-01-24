@@ -1,5 +1,6 @@
 AOS
 ===
+----------
 
 v0.0.1
 ------
@@ -15,6 +16,8 @@ Tests frameworks are not yet implemented.
 
 This version can be found under the `git tag` 'v0.0.1'. It is meant to be use as a startup for more complex apps.
 
+----------
+
 v0.0.1a
 -------
 The only difference is that this version has Mocha.js working as the test framework. Also, Chai.js, and Sinon.js are used. 
@@ -26,6 +29,8 @@ Some tasks have been added to the `Gruntfile.js` to facilitate the creation of t
 This version can be found under the `git tag` 'v0.0.1a'. It is meant to be use as a startup for more complex apps that needs to work with a basic testing framework.
 
 The next steps are to include 'Phantom.js' to create a browser simulation enviroment and to modify the existing code to work with 'Require.js'.
+
+----------
 
 v0.0.1b
 -------
@@ -40,3 +45,28 @@ This version can be found under the `git tag` 'v0.0.1b'. It is meant to be use a
 I was planning to use RequireJS for this application but after some thoughts I am not going to do it. Since the beggining my plan was to minify and uglify all the scrips before putting them into production, either with RequireJS or Grunt. The dependency management between scripts is not a major problem when using Backbone and concatenating the files automatically with Grunt. So, I'll just leave things as they are now. Maybe later I will fork this version and create a RequireJS version of it.
 
 The next step is to hook the app to a database. I don't really know which type yet though. Probably gonna try a NoSQL database like MongoDB or Redis, just to get the hang of them. If I end up going for a traditional RDBMS, I'll probably use PostgreSQL since it has worked great for me in the past. Some more research on database management using node is needed to reach the final decision.
+
+
+----------
+
+v0.0.1c
+-------
+Chages:
+
+ - Changes in the Grunt tasks:
+  	- Now the task for compiling CoffeeScript and the tests
+  	   are separated. This helps me check more easily that 
+  	   everything is ok.
+ - Mores tests where added or modified
+ - Added Sessions stored on a Redis Server
+ - Added MongoDB for data persistance
+ - Login capabilities using Passport.js
+ - Created view for creating users (#register)
+ - Created config file for passwords, and other delicate info
+  	which I don't want published on GitHub
+
+Next Steps:
+
+- Making the register form only available for Admin users
+ - Build an authorization system for the app
+
