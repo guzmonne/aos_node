@@ -1,30 +1,31 @@
 describe "App.Routers.MainRouter", ->
 	opts = 
 		trigger: true
-		replace: true
-
-	before ->
-		@router = new App.Routers.MainRouter()
-		# Stub all route methods
-		for route in _.values @router.routes
-			sinon.stub App.Routers.MainRouter.prototype, route
-		@routePairs = _.pairs(@router.routes)
-		@testRoute = (route, callback) ->
-			@router.navigate(route, opts)
-			expect(App.Routers.MainRouter.prototype[callback]).to.have.been.calledOnce
-			#expect(@routerSpy).to.have.been.calledOnce
-
-	beforeEach ->	
-		# Create router with stubs and manual fakes
-		@router = new App.Routers.MainRouter()
-		@routerSpy = sinon.spy()
-		@router.on "route", @routerSpy
-
-	after ->
-		Backbone.history.stop()
-		for pair in @routePairs
-			App.Routers.MainRouter.prototype[pair[1]].restore()
 	
-	it "should route correctly all routes", ->
-		for pair in @routePairs
-			@testRoute(pair[0], pair[1])
+	describe "Routing", ->
+		beforeEach ->
+			@router = new App.Routers.MainRouter()
+			sinon.spy(@router, "login")
+			sinon.spy(@router, "before")
+			sinon.spy(@router, "index")
+			sinon.spy(@router, "register")
+
+		afterEach ->
+			@router.login.restore()
+			@router.before.restore()
+			@router.index.restore()
+			@router.register.restore()
+			delete @router
+			
+		it "should send to login if user is not auth", ->
+			@router.navigate "home", opts
+			expect(@router.before).to.have.been.calledTwice
+			expect(App.session.get('redirectFrom')).to.equal("#home") 
+			expect(Backbone.history.location.hash).to.equal("#login")
+
+		it "should redirect to home if trying to access a page that a logged in user should not see"
+
+		it "should route to the page if no authorization is needed", ->
+			@router.navigate "register", opts
+			expect(Backbone.history.location.hash).to.equal("#register")
+			expect(@router.before).to.be.calledOnce

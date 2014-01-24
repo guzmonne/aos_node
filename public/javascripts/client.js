@@ -794,11 +794,12 @@ App.Routers.MainRouter = (function(_super) {
   MainRouter.prototype.routes = {
     'login': 'login',
     'register': 'register',
+    'home': 'index',
     '': 'index',
     '*path': 'default'
   };
 
-  MainRouter.prototype.requiresAuth = [""];
+  MainRouter.prototype.requiresAuth = ['', '#home'];
 
   MainRouter.prototype.preventAccessWhenAuth = ["#login"];
 
@@ -808,6 +809,7 @@ App.Routers.MainRouter = (function(_super) {
     path = Backbone.history.location.hash;
     needAuth = _.contains(this.requiresAuth, path);
     cancelAccess = _.contains(this.preventAccessWhenAuth, path);
+    console.log(isAuth, path, needAuth, cancelAccess);
     if (needAuth && !isAuth) {
       App.session.set("redirectFrom", path);
       return Backbone.history.navigate('login', {

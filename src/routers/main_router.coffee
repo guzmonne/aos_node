@@ -2,6 +2,7 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	routes:
 		'login'								:	'login'
 		'register'						: 'register'
+		'home'								: 'index'
 		''										: 'index'
 		'*path'								:	'default'
 
@@ -9,7 +10,8 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# Rutes that needs authentication:
 	# ================================
 	requiresAuth: [
-		""
+		''
+		'#home'
 	]
 
 	# ====================================================================
@@ -26,7 +28,7 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		path         = Backbone.history.location.hash
 		needAuth     = _.contains @requiresAuth, path
 		cancelAccess = _.contains @preventAccessWhenAuth, path
-
+		console.log isAuth, path, needAuth, cancelAccess
 		if needAuth and !isAuth
 			# We save the path to return the user to where he intended to go
 			# before being redirected to the login page

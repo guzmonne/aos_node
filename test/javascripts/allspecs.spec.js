@@ -23,11 +23,11 @@ describe("App.Collections.Users", function() {
           "Content-Type": "application/json"
         }, JSON.stringify([
           {
-            name: "Guzman Monne",
-            email: "guzmonne@hotmail.com",
-            phone: "6967896",
-            cellphone: "789456312",
-            rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+            username: 'guzmonne',
+            firstname: 'Guzman',
+            lastname: 'Monne',
+            email: 'guzmonne@example.com ',
+            id: '52e12203d0842ecf4960d8ce'
           }
         ])
       ]);
@@ -36,14 +36,11 @@ describe("App.Collections.Users", function() {
         expect(users).to.have.length(1);
         user = users.at(0);
         expect(user).to.be.ok;
-        expect(user.get("name")).to.contain("Guzman Monne");
-        expect(user.get("email")).to.contain("guzmonne@hotmail.com");
-        expect(user.get("phone")).to.contain("6967896");
-        expect(user.get("cellphone")).to.contain("789456312");
-        expect(user.get("rememberToken")).to.contain("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31");
-        expect(user.get("id")).to.be.a("number");
-        expect(user.get("createdAt")).to.be.a("Date");
-        expect(user.get("updatedAt")).to.be.a("Date");
+        expect(user.get("username")).to.contain("guzmonne");
+        expect(user.get("firstname")).to.contain("Guzman");
+        expect(user.get("lastname")).to.contain("Monne");
+        expect(user.get("email")).to.contain("guzmonne@example.com");
+        expect(user.get("id")).to.be.a("string");
         return done();
       });
       return users.fetch({
@@ -217,48 +214,35 @@ describe("App.Config", function() {
 describe("App.Routers.MainRouter", function() {
   var opts;
   opts = {
-    trigger: true,
-    replace: true
+    trigger: true
   };
-  before(function() {
-    var route, _i, _len, _ref;
-    this.router = new App.Routers.MainRouter();
-    _ref = _.values(this.router.routes);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      route = _ref[_i];
-      sinon.stub(App.Routers.MainRouter.prototype, route);
-    }
-    this.routePairs = _.pairs(this.router.routes);
-    return this.testRoute = function(route, callback) {
-      this.router.navigate(route, opts);
-      return expect(App.Routers.MainRouter.prototype[callback]).to.have.been.calledOnce;
-    };
-  });
-  beforeEach(function() {
-    this.router = new App.Routers.MainRouter();
-    this.routerSpy = sinon.spy();
-    return this.router.on("route", this.routerSpy);
-  });
-  after(function() {
-    var pair, _i, _len, _ref, _results;
-    Backbone.history.stop();
-    _ref = this.routePairs;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      pair = _ref[_i];
-      _results.push(App.Routers.MainRouter.prototype[pair[1]].restore());
-    }
-    return _results;
-  });
-  return it("should route correctly all routes", function() {
-    var pair, _i, _len, _ref, _results;
-    _ref = this.routePairs;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      pair = _ref[_i];
-      _results.push(this.testRoute(pair[0], pair[1]));
-    }
-    return _results;
+  return describe("Routing", function() {
+    beforeEach(function() {
+      this.router = new App.Routers.MainRouter();
+      sinon.spy(this.router, "login");
+      sinon.spy(this.router, "before");
+      sinon.spy(this.router, "index");
+      return sinon.spy(this.router, "register");
+    });
+    afterEach(function() {
+      this.router.login.restore();
+      this.router.before.restore();
+      this.router.index.restore();
+      this.router.register.restore();
+      return delete this.router;
+    });
+    it("should send to login if user is not auth", function() {
+      this.router.navigate("home", opts);
+      expect(this.router.before).to.have.been.calledTwice;
+      expect(App.session.get('redirectFrom')).to.equal("#home");
+      return expect(Backbone.history.location.hash).to.equal("#login");
+    });
+    it("should redirect to home if trying to access a page that a logged in user should not see");
+    return it("should route to the page if no authorization is needed", function() {
+      this.router.navigate("register", opts);
+      expect(Backbone.history.location.hash).to.equal("#register");
+      return expect(this.router.before).to.be.calledOnce;
+    });
   });
 });
 
@@ -339,47 +323,6 @@ describe("App.Views.UserNew", function() {
   return it("should be destroyed after successful save");
 });
 
-describe("App.Models.User", function(){
-	it("has default values", function(){
-		// Create empty user model
-		var model = new App.Models.User();
-
-		expect(model).to.be.ok;
-		expect(model.get("id")).to
-			.be.a('number').and
-			.to.exist;
-		expect(model.get("name")).to
-			.equal("").and
-			.to.exist;
-		expect(model.get("email")).to.equal("").and
-			.to.exist;
-		expect(model.get("phone")).to.equal("").and
-			.to.exist;
-		expect(model.get("cellphone")).to.equal("").and
-			.to.exist;
-		expect(model.get("rememberToken")).to.equal("").and
-			.to.exist;
-		expect(model.get("createdAt")).to.be.a("Date").and
-			.to.exist;
-		expect(model.get("updatedAt")).to.be.a("Date").and
-			.to.exist;
-	});
-	it("sets passed attributes", function(){
-		var model = new App.Models.User({
-			name: "Guzman Monne",
-			email: "guzmonne@hotmail.com",
-			phone: "6962030", 
-			cellphone: "099750505",
-			rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
-		});
-
-		expect(model.get("name")).to.equal("Guzman Monne");
-		expect(model.get("email")).to.equal("guzmonne@hotmail.com");
-		expect(model.get("phone")).to.equal("6962030");
-		expect(model.get("cellphone")).to.equal("099750505");
-		expect(model.get("rememberToken")).to.equal("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31");
-	});
-});
 describe("App.Regions.BaseRegion", function(){
 	beforeEach(function(){
 		this.baseRegion = new App.Regions.BaseRegion();

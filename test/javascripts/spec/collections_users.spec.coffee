@@ -16,11 +16,11 @@ describe "App.Collections.Users", ->
 													200,
 													{"Content-Type": "application/json"},
 													JSON.stringify([{
-															name: "Guzman Monne",
-															email: "guzmonne@hotmail.com",
-															phone: "6967896",
-															cellphone: "789456312",
-															rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+															username : 'guzmonne',
+															firstname: 'Guzman',
+															lastname : 'Monne',
+															email    : 'guzmonne@example.com '
+															id       : '52e12203d0842ecf4960d8ce'
 														}])
 													])
 			users.once "reset", ->
@@ -28,14 +28,11 @@ describe "App.Collections.Users", ->
 				# Check model attributes
 				user = users.at(0)
 				expect(user).to.be.ok				
-				expect(user.get("name")).to.contain("Guzman Monne")
-				expect(user.get("email")).to.contain("guzmonne@hotmail.com")
-				expect(user.get("phone")).to.contain("6967896")
-				expect(user.get("cellphone")).to.contain("789456312")
-				expect(user.get("rememberToken")).to.contain("jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31")
-				expect(user.get("id")).to.be.a("number")
-				expect(user.get("createdAt")).to.be.a("Date")
-				expect(user.get("updatedAt")).to.be.a("Date")
+				expect(user.get("username")).to.contain("guzmonne")
+				expect(user.get("firstname")).to.contain("Guzman")
+				expect(user.get("lastname")).to.contain("Monne")
+				expect(user.get("email")).to.contain("guzmonne@example.com")
+				expect(user.get("id")).to.be.a("string")
 				done()
 
 			users.fetch {reset: true}
