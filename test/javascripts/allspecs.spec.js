@@ -107,11 +107,155 @@ describe("App.Collections.Users", function() {
   });
 });
 
+describe("App.Models.BaseModel", function() {
+  beforeEach(function() {
+    this.model = new App.Models.BaseModel;
+    this.model.validations = {
+      "attr1": {
+        "presence": true,
+        "lengthGT": 3
+      },
+      "attr2": {
+        "lengthLT": 12
+      },
+      "attr3": {
+        "lengthGT": 3,
+        "lengthLT": 12
+      },
+      "attr4": {
+        "presence": true
+      }
+    };
+    this.attr = {
+      "attr1": "value1",
+      "attr2": "value2",
+      "attr3": "value3"
+    };
+    return this.invAttr = {
+      "attr1": "",
+      "attr2": "MoreThanTwelveChars",
+      "attr3": "3"
+    };
+  });
+  return describe("Validations", function() {
+    describe("validate(attr: Object, options: Object)", function() {
+      it("should parse the 'validations' object correctly and call the correct functions", function() {
+        var lengthSpy;
+        sinon.spy(this.model, "validatePresenceOf");
+        lengthSpy = sinon.spy(this.model, "validateLengthOf");
+        this.model.validate(this.attr);
+        expect(this.model.validatePresenceOf).to.have.been.calledTwice;
+        return expect(lengthSpy.callCount).to.equal(4);
+      });
+      it("should return an array of error objects", function() {
+        var result;
+        result = this.model.validate(this.invAttr);
+        return expect(result).to.be["instanceof"](Array);
+      });
+      it("should return an array of objects with a 'attr' and 'message' key", function() {
+        var keys, res, result, _i, _len, _results;
+        result = this.model.validate(this.invAttr);
+        _results = [];
+        for (_i = 0, _len = result.length; _i < _len; _i++) {
+          res = result[_i];
+          keys = _.keys(res);
+          expect(keys).to.contain("attr");
+          _results.push(expect(keys).to.contain("message"));
+        }
+        return _results;
+      });
+      return it("should not check atributes that are not yet in the model", function() {
+        var error, errors, _i, _len, _results;
+        errors = this.model.validate(this.invAttr);
+        _results = [];
+        for (_i = 0, _len = errors.length; _i < _len; _i++) {
+          error = errors[_i];
+          _results.push(expect(error.attr).not.to.equal("attr4"));
+        }
+        return _results;
+      });
+    });
+    describe("validatePresenceOf(value: Var)", function() {
+      it("should return true if the value exists and it's not empty", function() {
+        var result, value;
+        value = "NotEmpty";
+        result = this.model.validatePresenceOf(value);
+        return expect(result).to.be["true"];
+      });
+      return it("should return false if the value does not exists or is empty", function() {
+        var result, value;
+        value = null;
+        result = this.model.validatePresenceOf(value);
+        expect(result).to.be["false"];
+        value = "";
+        result = this.model.validatePresenceOf(value);
+        return expect(result).to.be["false"];
+      });
+    });
+    return describe("validateLengthOf(value: Var, length: Number, comp: String)", function() {
+      it("should return true if comp = 'gt' and value length is bigger than 'length'", function() {
+        var comp, length, result, value;
+        value = "SomeValue";
+        length = 3;
+        comp = 'gt';
+        result = this.model.validateLengthOf(value, length, comp);
+        return expect(result).to.be["true"];
+      });
+      it("should return false if comp = 'gt' and value length is less than 'length'", function() {
+        var comp, length, result, value;
+        value = "SomeValue";
+        length = 12;
+        comp = 'gt';
+        result = this.model.validateLengthOf(value, length, comp);
+        return expect(result).to.be["false"];
+      });
+      it("should return true if comp = 'lt' and value length is less than 'length'", function() {
+        var comp, length, result, value;
+        value = "SomeValue";
+        length = 12;
+        comp = 'lt';
+        result = this.model.validateLengthOf(value, length, comp);
+        return expect(result).to.be["true"];
+      });
+      return it("should return false if comp = 'lt' and value length is greater than 'length'", function() {
+        var comp, length, result, value;
+        value = "SomeValue";
+        length = 3;
+        comp = 'lt';
+        result = this.model.validateLengthOf(value, length, comp);
+        return expect(result).to.be["false"];
+      });
+    });
+  });
+});
+
 describe("App.Models.Session", function() {
   before(function() {
-    return this.model = new App.Models.Session();
+    this.server = sinon.fakeServer.create();
+    this.data = {
+      "auth": true,
+      "username": "gmonne",
+      "firstName": "Guzman",
+      "lastName": "Monne",
+      "email": "test@example.com",
+      "id": "52e1122203d23ecf4943d8ce"
+    };
+    this.server.respondWith("GET", "/session", [
+      200, {
+        "Content-Type": "application/json"
+      }, JSON.stringify(this.data)
+    ]);
+    return this.server.respondWith("POST", "/session/login", [
+      200, {
+        "Content-Type": "application/json"
+      }, JSON.stringify(this.data)
+    ]);
+  });
+  after(function() {
+    return this.server.restore();
   });
   describe("login(object: credentials)", function() {
+    it("should make an AJAX request");
     it("should send a POST request with the given credentials");
     it("sholud set the user and authenticate it");
     it("should redirect the user back to where he came or to the index");
@@ -129,6 +273,8 @@ describe("App.Models.Session", function() {
     return it("should run a callback function at the end");
   });
 });
+
+describe("App.Models.User", function() {});
 
 describe("App.Config", function() {
   before(function() {
@@ -216,19 +362,19 @@ describe("App.Routers.MainRouter", function() {
   opts = {
     trigger: true
   };
-  return describe("Routing", function() {
+  return describe("Router", function() {
     beforeEach(function() {
       this.router = new App.Routers.MainRouter();
       sinon.spy(this.router, "login");
       sinon.spy(this.router, "before");
       sinon.spy(this.router, "index");
-      return sinon.spy(this.router, "register");
+      return sinon.spy(this.router, "usersNew");
     });
     afterEach(function() {
       this.router.login.restore();
       this.router.before.restore();
       this.router.index.restore();
-      this.router.register.restore();
+      this.router.usersNew.restore();
       return delete this.router;
     });
     it("should send to login if user is not auth", function() {
@@ -239,9 +385,8 @@ describe("App.Routers.MainRouter", function() {
     });
     it("should redirect to home if trying to access a page that a logged in user should not see");
     return it("should route to the page if no authorization is needed", function() {
-      this.router.navigate("register", opts);
-      expect(Backbone.history.location.hash).to.equal("#register");
-      return expect(this.router.before).to.be.calledOnce;
+      Backbone.history.navigate("login", opts);
+      return expect(Backbone.history.location.hash).to.equal("#login");
     });
   });
 });
@@ -257,13 +402,21 @@ describe("App.Views.BaseView", function() {
     return expect(this.view.innerViews).to.be["instanceof"](Array);
   });
   describe("close()", function() {
-    return it("should call the onClose function once", function() {
+    it("should call the onClose function once", function() {
       this.onClose = sinon.spy(this.view, "onClose");
       this.view.close();
       return expect(this.onClose).to.have.been.calledOnce;
     });
+    return it("should call the beforeClose Function", function() {
+      this.view.beforeClose = function() {
+        return console.log("Test");
+      };
+      this.beforeClose = sinon.spy(this.view, "beforeClose");
+      this.view.close();
+      return expect(this.beforeClose).to.have.been.calledOnce;
+    });
   });
-  return describe("onClose()", function() {
+  describe("onClose()", function() {
     return it("should call the close() method on the appended views", function() {
       var appendedView1, appendedView2, closeSpy1, closeSpy2;
       appendedView1 = new App.Views.ContentView();
@@ -277,6 +430,15 @@ describe("App.Views.BaseView", function() {
       this.view.onClose();
       expect(closeSpy1).to.have.been.calledOnce;
       return expect(closeSpy2).to.have.been.calledOnce;
+    });
+  });
+  return describe("renderIn(container: String)", function() {
+    return it("should render the template inside the container", function() {
+      var result;
+      this.view.template = HBS['src/templates/test.hbs'];
+      this.view.renderIn('#fixtures');
+      result = $('#fixtures').html();
+      return expect(result).to.equal('<h1>This is a test</h1>');
     });
   });
 });
@@ -394,16 +556,16 @@ describe("App.Regions.BaseRegion", function(){
 		});
 	});
 
-	describe("swapAndRenderCurrentView(newView)", function(){
+	describe("swapView(newView)", function(){
 		it("should call the swapCurrentView function once", function(){
 			sinon.spy(this.baseRegion, "swapCurrentView");
-			this.baseRegion.swapAndRenderCurrentView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
 			expect(this.baseRegion.swapCurrentView).to.have.been.calledOnce;
 			this.baseRegion.swapCurrentView.restore();
 		});
 		it("should call the render function once", function(){
 			sinon.spy(this.baseRegion, "render");
-			this.baseRegion.swapAndRenderCurrentView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
 			expect(this.baseRegion.render).to.have.been.calledOnce;
 			this.baseRegion.render.restore();
 		});

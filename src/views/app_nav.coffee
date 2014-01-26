@@ -1,17 +1,19 @@
 class App.Views.AppNav extends App.Views.BaseView  
+	name: "AppNav"
+
 	template: HBS['src/templates/app_nav.hbs']
 
 	events:
 		'click ul.nav.navbar-nav li a': 'toggleActiveButton'
-		'click #nav-logout'           : 'logout'
+		'click .navbar-brand'					: 'removeActive'
 
 	awake: ->
 		@listenTo App.user, "change", @render()
 
+	removeActive: ->
+		$('ul.nav.navbar-nav li.active').removeClass('active')
+
 	toggleActiveButton: (e) ->
 		id = '#' + e.target.id
-		$('ul.nav.navbar-nav li.active').removeClass('active')
+		@removeActive()
 		$(id).parent().addClass('active')
-
-	logout: (e) ->
-		App.session.logout ->  Backbone.history.navigate '#login', { trigger : true }

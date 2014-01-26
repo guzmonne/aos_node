@@ -15,9 +15,9 @@ module.exports = function(app, passport){
 	// ----
 	// USER
 	// ----
-	app.get( '/api/users', 			user.index);
+	app.get( '/api/users', 			Auth, user.index);
 	app.get( '/api/users/:id',	Auth, user.show);
-	app.post('/api/users', 			user.create);
+	app.post('/api/users', 			Auth, user.create);
 	// --------------
 	// SESSION ROUTES
 	// --------------

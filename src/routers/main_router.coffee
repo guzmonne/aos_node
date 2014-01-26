@@ -1,7 +1,8 @@
 class App.Routers.MainRouter extends App.Routers.BaseRouter 
 	routes:
 		'login'								:	'login'
-		'register'						: 'register'
+		'logout'							: 'logout'
+		'users/new'						: 'usersNew'
 		'home'								: 'index'
 		''										: 'index'
 		'*path'								:	'default'
@@ -12,6 +13,8 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	requiresAuth: [
 		''
 		'#home'
+		'#logout'
+		'#users/new'
 	]
 
 	# ====================================================================
@@ -28,7 +31,6 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		path         = Backbone.history.location.hash
 		needAuth     = _.contains @requiresAuth, path
 		cancelAccess = _.contains @preventAccessWhenAuth, path
-		console.log isAuth, path, needAuth, cancelAccess
 		if needAuth and !isAuth
 			# We save the path to return the user to where he intended to go
 			# before being redirected to the login page
@@ -38,19 +40,26 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 			# User is authenticated and tries to go to a page only available
 			# to un-authenticated users
 			Backbone.history.navigate '', {trigger: true}
-		else
-			# No problem, let him pass
-			return next()
+		else return next()
 
 	after: (params) ->
-		return if (App.headerRegion.currentView? and App.footerRegion.currentView?)
-		footer = new App.Views.ClientFooter({model: App.appDetails})
-		if App.session.get "authenticated"
-			header = new App.Views.AppNav({model: App.user})
+		@setHeader()
+		@setFooter()
+		
+	setHeader: ->
+		headerView = App.headerRegion.currentView
+		if App.session.get("authenticated")
+			if (headerView? and headerView.name == "ClientNav") or !headerView?
+				header = new App.Views.AppNav({model: App.user})
 		else
-			header = new App.Views.ClientNav({model: App.appDetails})
-		App.headerRegion.swapAndRenderCurrentView(header)
-		App.footerRegion.swapAndRenderCurrentView(footer)
+			if (headerView? and headerView.name == "AppNav") or !headerView?
+				header = new App.Views.ClientNav({model: App.appDetails})
+		if header? then App.headerRegion.swapView(header)
+
+	setFooter: ->
+		unless App.footerRegion.currentView?
+			footer = new App.Views.ClientFooter({model: App.appDetails})
+		if footer? then App.footerRegion.swapView(footer)
 
 	fetchError: (error) ->
 		# If during fetching data from server, session expired and server
@@ -63,18 +72,23 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# ==============
 	# Route Handlers
 	# ==============
+	# INDEX
+	# -----
 	index: ->
-		App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({model: App.user}))
-		App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({model: App.user}))
-
+		App.contentRegion.swapView(new App.Views.ContentView({model: App.user}))
+	# DEFAULT
+	# -------
 	default: ->
 		Backbone.history.navigate '', {trigger: true}
-
+	# SESSIONS
+	# --------
 	login: ->
-		App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav({model: App.appDetails}))
-		App.contentRegion.swapAndRenderCurrentView(new App.Views.Login({model: App.session}))
+		App.headerRegion.swapView(new App.Views.ClientNav({model: App.appDetails}))
+		App.contentRegion.swapView(new App.Views.Login({model: App.session}))
 
-	register: ->
-		App.contentRegion.swapAndRenderCurrentView(new App.Views.Register({model: new App.Models.User()}))
-
-
+	logout: (e) ->
+		App.session.logout ->  Backbone.history.navigate '#login', { trigger : true }
+	# USERS
+	# -----
+	usersNew: ->
+		App.contentRegion.swapView(new App.Views.UsersNew({model: new App.Models.User()}))

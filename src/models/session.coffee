@@ -50,6 +50,7 @@ class App.Models.Session extends Backbone.Model
 			App.user.set response
 			@set "authenticated", true
 			@set "user", JSON.stringify(response.user);
+			console.log @get "redirectFrom"
 			if @get "redirectFrom"
 				path = @get "redirectFrom"
 				@unset "redirectFrom"

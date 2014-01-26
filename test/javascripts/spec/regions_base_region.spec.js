@@ -69,16 +69,16 @@ describe("App.Regions.BaseRegion", function(){
 		});
 	});
 
-	describe("swapAndRenderCurrentView(newView)", function(){
+	describe("swapView(newView)", function(){
 		it("should call the swapCurrentView function once", function(){
 			sinon.spy(this.baseRegion, "swapCurrentView");
-			this.baseRegion.swapAndRenderCurrentView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
 			expect(this.baseRegion.swapCurrentView).to.have.been.calledOnce;
 			this.baseRegion.swapCurrentView.restore();
 		});
 		it("should call the render function once", function(){
 			sinon.spy(this.baseRegion, "render");
-			this.baseRegion.swapAndRenderCurrentView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
 			expect(this.baseRegion.render).to.have.been.calledOnce;
 			this.baseRegion.render.restore();
 		});

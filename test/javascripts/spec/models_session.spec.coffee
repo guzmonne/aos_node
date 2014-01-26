@@ -1,8 +1,30 @@
 describe "App.Models.Session", ->
 	before ->
-		@model = new App.Models.Session()
+		@server = sinon.fakeServer.create();
+		@data =
+			"auth"     : true
+			"username" : "gmonne"
+			"firstName": "Guzman"
+			"lastName" : "Monne"
+			"email"    : "test@example.com"
+			"id"       : "52e1122203d23ecf4943d8ce"
+		@server.respondWith("GET", "/session", [
+			200
+			{"Content-Type":"application/json"}
+			JSON.stringify(@data)
+		])
+
+		@server.respondWith("POST", "/session/login", [
+			200
+			{"Content-Type":"application/json"}
+			JSON.stringify(@data)
+		])
+
+	after ->
+		@server.restore()
 
 	describe "login(object: credentials)", ->
+		it "should make an AJAX request"
 		it "should send a POST request with the given credentials"
 		it "sholud set the user and authenticate it"
 		it "should redirect the user back to where he came or to the index"

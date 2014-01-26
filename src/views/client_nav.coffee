@@ -1,4 +1,6 @@
 class App.Views.ClientNav extends App.Views.BaseView  
+	name: 'ClientNav'
+
 	template: HBS['src/templates/header.hbs']
 
 	events:

@@ -119,7 +119,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.lastName) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.lastName); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + " \n					<b class='caret'></b>\n				</a>\n				<ul class=\"dropdown-menu\">\n					<li><a href=\"#profile\">Profile</a></li>\n					<li class=\"divider\"></li>\n					<li><a href=\"#logout\" id=\"nav-logout\">Logout</a></li>\n				</ul>\n			</li>\n		</ul>\n		<ul class=\"nav navbar-nav\">\n			<li class=\"nav-button\"> <a href=\"#\" id=\"nav-something\">Something</a></li>\n		</ul>\n	</div>\n</div>";
+    + " \n					<b class='caret'></b>\n				</a>\n				<ul class=\"dropdown-menu\">\n					<li><a href=\"#profile\">Profile</a></li>\n					<li class=\"divider\"></li>\n					<li><a href=\"#logout\" id=\"nav-logout\">Logout</a></li>\n				</ul>\n			</li>\n		</ul>\n		<ul class=\"nav navbar-nav\">\n			<li>	\n				<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n					Usuarios\n					<b class='caret'></b>\n				</a>\n				<ul class=\"dropdown-menu\">\n					<li><a href=\"#users\">Lista</a></li>\n					<li><a href=\"#users/new\">Nuevo</a></li>\n				</ul>\n			</li>\n			<li class=\"nav-button\"> </li>\n		</ul>\n	</div>\n</div>";
   return buffer;
   });
 this["HBS"] = this["HBS"] || {};
@@ -131,6 +131,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   return "<div class=\"jumbotron\">\n	<h1>Welcome to my page!</h1>\n	<small>This is just a test</small>\n</div>";
+  });
+this["HBS"] = this["HBS"] || {};
+
+this["HBS"]["src/templates/snippets/dismiss_alert.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"alert alert-";
+  if (stack1 = helpers.alert) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.alert); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " alert-dismissable\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n  ";
+  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
   });
 this["HBS"] = this["HBS"] || {};
 
@@ -174,13 +193,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 this["HBS"] = this["HBS"] || {};
 
-this["HBS"]["src/templates/register.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["HBS"]["src/templates/test.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"row vertical-offset-100\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Nuevo Usuario</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"User Name\" name=\"username\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"First Name\" name=\"firstname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"Last Name\" name=\"lastname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"email\">\n						</div>\n						<div class=\"form-group\">\n							<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n						</div>\n						<hr>\n						<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Login\">\n					</fieldset>\n				</form>\n			</div>\n	</div>\n</div>\n";
+  return "<h1>This is a test</h1>";
+  });
+this["HBS"] = this["HBS"] || {};
+
+this["HBS"]["src/templates/users/users_new.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"row\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Nuevo Usuario</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<div class=\"info\"></div>\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<label for=\"username\" class=\"control-label\">Usuario</label>\n							<input class=\"form-control\" placeholder=\"Usuario\" name=\"username\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"firstname\" class=\"control-label\">Nombre</label>\n							<input class=\"form-control\" placeholder=\"Nombre\" name=\"firstname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"lastName\" class=\"control-label\">Apellido</label>\n							<input class=\"form-control\" placeholder=\"Apellido\" name=\"lastName\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"email\" class=\"control-label\">E-mail</label>\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"email\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"password\" class=\"control-label\">Password</label>\n							<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n						</div>\n						<hr>\n						<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Crear Usuario\">\n					</fieldset>\n				</form>\n			</div>\n	</div>\n</div>\n";
   });
 var _ref, _ref1, _ref2, _ref3,
   __hasProp = {}.hasOwnProperty,
@@ -201,6 +230,86 @@ App.Models.BaseModel = (function(_super) {
       u = u + ("/" + this.id);
     }
     return u;
+  };
+
+  BaseModel.prototype.validatePresenceOf = function(value) {
+    if (value === null) {
+      return false;
+    }
+    if (value && value.length) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  BaseModel.prototype.validateLengthOf = function(value, length, comp) {
+    if (value === null) {
+      return false;
+    }
+    switch (comp) {
+      case "gt":
+        if (value.length > length) {
+          return true;
+        } else {
+          return false;
+        }
+        break;
+      case "lt":
+        if (value.length < length) {
+          return true;
+        } else {
+          return false;
+        }
+    }
+  };
+
+  BaseModel.prototype.validate = function(attrs, options) {
+    var attr, attribute, errors, key, validation, value, _ref1;
+    if (attrs == null) {
+      return;
+    }
+    errors = [];
+    _ref1 = this.validations;
+    for (attr in _ref1) {
+      validation = _ref1[attr];
+      for (key in validation) {
+        value = validation[key];
+        if (attrs[attr] != null) {
+          attribute = attrs[attr];
+        } else {
+          attribute = " ";
+        }
+        switch (key) {
+          case "presence":
+            if (!this.validatePresenceOf(attribute)) {
+              errors.push({
+                attr: attr,
+                message: "este campo no puede permanecer vacío"
+              });
+            }
+            break;
+          case "lengthGT":
+            if (!this.validateLengthOf(attribute, value, 'gt')) {
+              errors.push({
+                attr: attr,
+                message: "debe ingresar mas de " + value + " caracteres"
+              });
+            }
+            break;
+          case "lengthLT":
+            if (!this.validateLengthOf(attribute, value, 'lt')) {
+              errors.push({
+                attr: attr,
+                message: "debe ingresar menos de " + value + " caracteres"
+              });
+            }
+        }
+      }
+    }
+    if (errors.length > 0) {
+      return errors;
+    }
   };
 
   return BaseModel;
@@ -302,6 +411,7 @@ App.Models.Session = (function(_super) {
       App.user.set(response);
       _this.set("authenticated", true);
       _this.set("user", JSON.stringify(response.user));
+      console.log(_this.get("redirectFrom"));
       if (_this.get("redirectFrom")) {
         path = _this.get("redirectFrom");
         _this.unset("redirectFrom");
@@ -373,9 +483,34 @@ App.Models.User = (function(_super) {
 
   User.prototype.urlRoot = '/api/users';
 
+  User.prototype.validations = {
+    username: {
+      "presence": true,
+      "lengthGT": 3,
+      "lengthLT": 50
+    },
+    firstname: {
+      "presence": true,
+      "lengthLT": 50
+    },
+    lastName: {
+      "presence": true,
+      "lengthLT": 50
+    },
+    email: {
+      "presence": true,
+      "email": true
+    },
+    password: {
+      "presence": true,
+      "lengthGT": 7,
+      "lengthLT": 20
+    }
+  };
+
   return User;
 
-})(Backbone.Model);
+})(App.Models.BaseModel);
 
 var _ref,
   __hasProp = {}.hasOwnProperty,
@@ -432,7 +567,7 @@ App.Regions.BaseRegion = (function(_super) {
     return this.currentView = newView;
   };
 
-  BaseRegion.prototype.swapAndRenderCurrentView = function(newView) {
+  BaseRegion.prototype.swapView = function(newView) {
     this.swapCurrentView(newView);
     return this.render();
   };
@@ -505,6 +640,8 @@ App.Views.BaseView = (function(_super) {
 
   BaseView.prototype.template = null;
 
+  BaseView.prototype.dismissAlertTemplate = HBS['src/templates/snippets/dismiss_alert.hbs'];
+
   BaseView.prototype.initialize = function() {
     if (this.awake) {
       this.awake();
@@ -523,6 +660,9 @@ App.Views.BaseView = (function(_super) {
       model = {};
     }
     $(this.el).html(this.template(model));
+    if (_.isFunction(this.afterRender)) {
+      this.afterRender();
+    }
     return this;
   };
 
@@ -560,6 +700,43 @@ App.Views.BaseView = (function(_super) {
     }
   };
 
+  BaseView.prototype.dismissAlert = function(target, options) {
+    var attrs;
+    if (target == null) {
+      return;
+    }
+    if (options != null) {
+      attrs = options;
+    } else {
+      attrs = {
+        alert: "info",
+        message: "<strong>HINT:</strong> You should pass an Object with a message."
+      };
+    }
+    target = this.$(target);
+    if ((options != null) && (options.fade != null) && options.fade) {
+      return target.hide().html(this.dismissAlertTemplate(attrs)).fadeIn('slow');
+    } else {
+      return target.html(this.dismissAlertTemplate(attrs));
+    }
+  };
+
+  BaseView.prototype.handleValidations = function(model, errors) {
+    var error, i, input, labels, message, _i, _len, _results;
+    this.$('p.control-label').remove();
+    this.$('.has-error').removeClass('has-error');
+    _results = [];
+    for (i = _i = 0, _len = errors.length; _i < _len; i = ++_i) {
+      error = errors[i];
+      input = this.$("[name=" + error.attr + "]");
+      labels = $(".error-label-for-" + error.attr);
+      message = '<p class="control-label error-label-for-' + error.attr + '"><span class="glyphicon glyphicon-remove"></span>' + "  " + error.message + '</p>';
+      input.after(message);
+      _results.push(input.parent().addClass('has-error'));
+    }
+    return _results;
+  };
+
   return BaseView;
 
 })(Backbone.View);
@@ -572,30 +749,28 @@ App.Views.AppNav = (function(_super) {
     return _ref1;
   }
 
+  AppNav.prototype.name = "AppNav";
+
   AppNav.prototype.template = HBS['src/templates/app_nav.hbs'];
 
   AppNav.prototype.events = {
     'click ul.nav.navbar-nav li a': 'toggleActiveButton',
-    'click #nav-logout': 'logout'
+    'click .navbar-brand': 'removeActive'
   };
 
   AppNav.prototype.awake = function() {
     return this.listenTo(App.user, "change", this.render());
   };
 
+  AppNav.prototype.removeActive = function() {
+    return $('ul.nav.navbar-nav li.active').removeClass('active');
+  };
+
   AppNav.prototype.toggleActiveButton = function(e) {
     var id;
     id = '#' + e.target.id;
-    $('ul.nav.navbar-nav li.active').removeClass('active');
+    this.removeActive();
     return $(id).parent().addClass('active');
-  };
-
-  AppNav.prototype.logout = function(e) {
-    return App.session.logout(function() {
-      return Backbone.history.navigate('#login', {
-        trigger: true
-      });
-    });
   };
 
   return AppNav;
@@ -623,6 +798,8 @@ App.Views.ClientNav = (function(_super) {
     _ref3 = ClientNav.__super__.constructor.apply(this, arguments);
     return _ref3;
   }
+
+  ClientNav.prototype.name = 'ClientNav';
 
   ClientNav.prototype.template = HBS['src/templates/header.hbs'];
 
@@ -691,47 +868,74 @@ App.Views.Login = (function(_super) {
 
 })(App.Views.BaseView);
 
-App.Views.Register = (function(_super) {
-  __extends(Register, _super);
+App.Views.UsersNew = (function(_super) {
+  __extends(UsersNew, _super);
 
-  function Register() {
-    _ref6 = Register.__super__.constructor.apply(this, arguments);
+  function UsersNew() {
+    _ref6 = UsersNew.__super__.constructor.apply(this, arguments);
     return _ref6;
   }
 
-  Register.prototype.template = HBS['src/templates/register.hbs'];
+  UsersNew.prototype.template = HBS['src/templates/users/users_new.hbs'];
 
-  Register.prototype.events = {
-    "submit form": "register"
+  UsersNew.prototype.events = {
+    "submit form": "create",
+    "focus input": "toggleLabel",
+    "focusout input": "toggleLabel"
   };
 
-  Register.prototype.awake = function() {
+  UsersNew.prototype.awake = function() {
     this.listenTo(this.model, "sync", this.handleSuccess);
-    return this.listenTo(this.model, "error", this.handleError);
+    this.listenTo(this.model, "error", this.handleError);
+    this.listenTo(this.model, "invalid", this.handleValidations);
+    return this.modelBinder = new Backbone.ModelBinder();
   };
 
-  Register.prototype.register = function(e) {
-    var attributes;
+  UsersNew.prototype.afterRender = function() {
+    this.$('.control-label').hide();
+    return this.modelBinder.bind(this.model, this.$el);
+  };
+
+  UsersNew.prototype.beforeClose = function() {
+    return this.modelBinder.unbind();
+  };
+
+  UsersNew.prototype.create = function(e) {
     e.preventDefault();
-    attributes = {
-      username: $('[name=username]').val(),
-      firstname: $('[name=firstname]').val(),
-      lastName: $('[name=lastname]').val(),
-      email: $('[name=email]').val(),
-      password: $('[name=password]').val()
-    };
-    return this.model.save(attributes);
+    return this.model.save();
   };
 
-  Register.prototype.handleSuccess = function(model, response, options) {
-    return console.log("Success");
+  UsersNew.prototype.toggleLabel = function(e) {
+    var targetName;
+    if (_.isObject(e)) {
+      targetName = e.target.name;
+    } else if (_.isString(e)) {
+      targetName = e;
+    }
+    if (this.$("input[name=" + targetName + "]").val() === "") {
+      return this.$("[for=" + targetName + "]").fadeToggle('fast');
+    }
   };
 
-  Register.prototype.handleError = function(model, xhr, options) {
-    return console.log("Error");
+  UsersNew.prototype.handleSuccess = function(model, response, options) {
+    this.model = new App.Models.User;
+    this.render();
+    this.dismissAlert('.info', {
+      fade: true,
+      alert: 'success',
+      message: 'El usuario ha sido creado con exito.'
+    });
+    return $('[name=username]').focus();
   };
 
-  return Register;
+  UsersNew.prototype.handleError = function(model, xhr, options) {
+    return this.dismissAlert('.info', {
+      alert: 'danger',
+      message: 'Se ha producido un error al intentar crear el usuario.'
+    });
+  };
+
+  return UsersNew;
 
 })(App.Views.BaseView);
 
@@ -793,13 +997,14 @@ App.Routers.MainRouter = (function(_super) {
 
   MainRouter.prototype.routes = {
     'login': 'login',
-    'register': 'register',
+    'logout': 'logout',
+    'users/new': 'usersNew',
     'home': 'index',
     '': 'index',
     '*path': 'default'
   };
 
-  MainRouter.prototype.requiresAuth = ['', '#home'];
+  MainRouter.prototype.requiresAuth = ['', '#home', '#logout', '#users/new'];
 
   MainRouter.prototype.preventAccessWhenAuth = ["#login"];
 
@@ -809,7 +1014,6 @@ App.Routers.MainRouter = (function(_super) {
     path = Backbone.history.location.hash;
     needAuth = _.contains(this.requiresAuth, path);
     cancelAccess = _.contains(this.preventAccessWhenAuth, path);
-    console.log(isAuth, path, needAuth, cancelAccess);
     if (needAuth && !isAuth) {
       App.session.set("redirectFrom", path);
       return Backbone.history.navigate('login', {
@@ -825,24 +1029,41 @@ App.Routers.MainRouter = (function(_super) {
   };
 
   MainRouter.prototype.after = function(params) {
-    var footer, header;
-    if ((App.headerRegion.currentView != null) && (App.footerRegion.currentView != null)) {
-      return;
-    }
-    footer = new App.Views.ClientFooter({
-      model: App.appDetails
-    });
+    this.setHeader();
+    return this.setFooter();
+  };
+
+  MainRouter.prototype.setHeader = function() {
+    var header, headerView;
+    headerView = App.headerRegion.currentView;
     if (App.session.get("authenticated")) {
-      header = new App.Views.AppNav({
-        model: App.user
-      });
+      if (((headerView != null) && headerView.name === "ClientNav") || (headerView == null)) {
+        header = new App.Views.AppNav({
+          model: App.user
+        });
+      }
     } else {
-      header = new App.Views.ClientNav({
+      if (((headerView != null) && headerView.name === "AppNav") || (headerView == null)) {
+        header = new App.Views.ClientNav({
+          model: App.appDetails
+        });
+      }
+    }
+    if (header != null) {
+      return App.headerRegion.swapView(header);
+    }
+  };
+
+  MainRouter.prototype.setFooter = function() {
+    var footer;
+    if (App.footerRegion.currentView == null) {
+      footer = new App.Views.ClientFooter({
         model: App.appDetails
       });
     }
-    App.headerRegion.swapAndRenderCurrentView(header);
-    return App.footerRegion.swapAndRenderCurrentView(footer);
+    if (footer != null) {
+      return App.footerRegion.swapView(footer);
+    }
   };
 
   MainRouter.prototype.fetchError = function(error) {
@@ -856,10 +1077,7 @@ App.Routers.MainRouter = (function(_super) {
   };
 
   MainRouter.prototype.index = function() {
-    App.contentRegion.swapAndRenderCurrentView(new App.Views.ContentView({
-      model: App.user
-    }));
-    return App.headerRegion.swapAndRenderCurrentView(new App.Views.AppNav({
+    return App.contentRegion.swapView(new App.Views.ContentView({
       model: App.user
     }));
   };
@@ -871,16 +1089,24 @@ App.Routers.MainRouter = (function(_super) {
   };
 
   MainRouter.prototype.login = function() {
-    App.headerRegion.swapAndRenderCurrentView(new App.Views.ClientNav({
+    App.headerRegion.swapView(new App.Views.ClientNav({
       model: App.appDetails
     }));
-    return App.contentRegion.swapAndRenderCurrentView(new App.Views.Login({
+    return App.contentRegion.swapView(new App.Views.Login({
       model: App.session
     }));
   };
 
-  MainRouter.prototype.register = function() {
-    return App.contentRegion.swapAndRenderCurrentView(new App.Views.Register({
+  MainRouter.prototype.logout = function(e) {
+    return App.session.logout(function() {
+      return Backbone.history.navigate('#login', {
+        trigger: true
+      });
+    });
+  };
+
+  MainRouter.prototype.usersNew = function() {
+    return App.contentRegion.swapView(new App.Views.UsersNew({
       model: new App.Models.User()
     }));
   };

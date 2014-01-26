@@ -94,7 +94,7 @@ module.exports = function(grunt){
 				dest: "public/javascripts/regions.coffee"
 			},
 			views: {
-				src: "src/views/*.coffee",
+				src: ["src/views/*.coffee", "src/views/**/*.coffee"],
 				dest: "public/javascripts/views.coffee"
 			},
 			routers: {

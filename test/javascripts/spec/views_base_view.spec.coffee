@@ -15,6 +15,12 @@ describe "App.Views.BaseView", ->
 			@view.close()
 			expect(@onClose).to.have.been.calledOnce
 
+		it "should call the beforeClose Function", ->
+			@view.beforeClose = -> console.log "Test"
+			@beforeClose = sinon.spy @view, "beforeClose"
+			@view.close()
+			expect(@beforeClose).to.have.been.calledOnce
+
 	describe "onClose()", ->
 
 		it "should call the close() method on the appended views", ->
@@ -29,3 +35,10 @@ describe "App.Views.BaseView", ->
 			@view.onClose()
 			expect(closeSpy1).to.have.been.calledOnce
 			expect(closeSpy2).to.have.been.calledOnce
+
+	describe "renderIn(container: String)", ->
+		it "should render the template inside the container", ->
+			@view.template = HBS['src/templates/test.hbs']
+			@view.renderIn('#fixtures')
+			result = $('#fixtures').html()
+			expect(result).to.equal('<h1>This is a test</h1>')

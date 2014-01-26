@@ -29,6 +29,13 @@ exports.show = function(req, res){
 };
 
 exports.create = function(req, res){
+	if (Object.keys(req.body).length === 0){
+		return res.send(401, {
+			error: {
+				message: "Empty body sent"
+			}
+		});
+	}
 	var params = {
 		username  : req.body.username,
 		firstname : req.body.firstname,
@@ -41,11 +48,15 @@ exports.create = function(req, res){
 	user.save(function(err){
 		if (err){
 			return res.send(400, {
-				error: utils.errors(err.errors),
-				user : user,
-				title: 'Sign Up'
+				error: err.errors
 			});
 		}
+		return res.send(200, {
+			username : user.username,
+			firstname: user.firstname,
+			lastname : user.lastname,
+			email    : user.email,
+			id       : user._id,
+		});
 	});
-	return res.send(200, user);
 };
