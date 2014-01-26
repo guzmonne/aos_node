@@ -278,7 +278,7 @@ App.Models.BaseModel = (function(_super) {
         if (attrs[attr] != null) {
           attribute = attrs[attr];
         } else {
-          attribute = " ";
+          attribute = "";
         }
         switch (key) {
           case "presence":

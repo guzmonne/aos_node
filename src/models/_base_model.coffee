@@ -21,7 +21,7 @@ class App.Models.BaseModel extends Backbone.Model
 		errors = []
 		for attr, validation of @validations
 			for key, value of validation
-				if attrs[attr]? then attribute = attrs[attr] else attribute = " "
+				if attrs[attr]? then attribute = attrs[attr] else attribute = ""
 				switch key
 					when "presence"
 						unless @validatePresenceOf(attribute) 
