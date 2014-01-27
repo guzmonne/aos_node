@@ -1,10 +1,6 @@
-class App.Views.BaseView extends Backbone.View 
+class App.Views.BaseView extends App.Regions.BaseRegion 
 	template            : null
 	dismissAlertTemplate: HBS['src/templates/snippets/dismiss_alert.hbs']
-
-	initialize: ->
-		if @awake then @awake()
-		@innerViews = []
 
 	render: ->
 		if _.isFunction @beforeRender then @beforeRender()
@@ -18,6 +14,12 @@ class App.Views.BaseView extends Backbone.View
 		$(container).html(@template(model));
 		this
 
+	addInnerView: (newView) ->
+		throw new Error('You must pass a new view to be rendered') unless newView? 
+		throw new Error('You must set the "container" property before calling this function') unless @container?
+		@innerViews.push newView
+		@renderView(newView)
+
 	close: ->
 		if _.isFunction @beforeClose then @beforeClose()
 		if _.isFunction @onClose then @onClose()
@@ -29,7 +31,7 @@ class App.Views.BaseView extends Backbone.View
 				view.close()
 
 	dismissAlert: (target, options) ->
-		return unless target?
+		return new Error('Yoy must pass a target for the alert') unless target?
 		if options?
 			attrs = options
 		else
@@ -37,15 +39,19 @@ class App.Views.BaseView extends Backbone.View
 				alert: "info",
 				message: "<strong>HINT:</strong> You should pass an Object with a message."
 			}
-		target = @$(target)
+		target = $(target)
 		if options? and options.fade? and options.fade
 			target.hide().html(@dismissAlertTemplate(attrs)).fadeIn('slow')
 		else
 			target.html(@dismissAlertTemplate(attrs))
 
 	handleValidations: (model, errors) ->
+		@dismissAlert '.info',
+			alert  : "danger"
+			message: 'Verifique su información'
 		@$('p.control-label').remove()
 		@$('.has-error').removeClass('has-error')
+		return unless errors? and model?
 		for error, i in errors
 			input   = @$("[name=#{error.attr}]")
 			labels  = $(".error-label-for-#{error.attr}")

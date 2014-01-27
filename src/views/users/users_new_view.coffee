@@ -40,7 +40,13 @@ class App.Views.UsersNew extends App.Views.BaseView
 			message: 'El usuario ha sido creado con exito.'
 		$('[name=username]').focus()
 
-	handleError: (model, xhr, options)->
-		@dismissAlert '.info', 
-			alert  : 'danger'
-			message: 'Se ha producido un error al intentar crear el usuario.'
+	handleError: (model, xhr, options) ->
+		@handleValidations()
+		if xhr.status == 400
+			@dismissAlert '.info',
+				alert: 'danger'
+				message: 'Ya existe el usuario.'
+		else
+			@dismissAlert '.info', 
+				alert  : 'danger'
+				message: 'Se ha producido un error al intentar crear el usuario.'

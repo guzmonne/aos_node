@@ -152,7 +152,7 @@ describe("App.Models.BaseModel", function() {
         result = this.model.validate(this.invAttr);
         return expect(result).to.be["instanceof"](Array);
       });
-      it("should return an array of objects with a 'attr' and 'message' key", function() {
+      return it("should return an array of objects with a 'attr' and 'message' key", function() {
         var keys, res, result, _i, _len, _results;
         result = this.model.validate(this.invAttr);
         _results = [];
@@ -161,16 +161,6 @@ describe("App.Models.BaseModel", function() {
           keys = _.keys(res);
           expect(keys).to.contain("attr");
           _results.push(expect(keys).to.contain("message"));
-        }
-        return _results;
-      });
-      return it("should not check atributes that are not yet in the model", function() {
-        var error, errors, _i, _len, _results;
-        errors = this.model.validate(this.invAttr);
-        _results = [];
-        for (_i = 0, _len = errors.length; _i < _len; _i++) {
-          error = errors[_i];
-          _results.push(expect(error.attr).not.to.equal("attr4"));
         }
         return _results;
       });
@@ -393,13 +383,45 @@ describe("App.Routers.MainRouter", function() {
 
 describe("App.Views.BaseView", function() {
   beforeEach(function() {
+    this.newView = new App.Views.BaseView({
+      model: new App.Models.Application
+    });
+    this.newView.template = function(model) {
+      return 'This is a test';
+    };
     return this.view = new App.Views.BaseView();
   });
   afterEach(function() {
-    return delete this.view;
+    this.view.close();
+    $('#fixtures').empty();
+    return this.newView.close();
   });
   it("should contain an innverViews array", function() {
     return expect(this.view.innerViews).to.be["instanceof"](Array);
+  });
+  describe("addInnerView(newView: View)", function() {
+    it("should add the 'newView' to the innerViews array", function() {
+      this.view.container = "#fixtures";
+      this.view.addInnerView(this.newView);
+      return expect(this.view.innerViews.length).to.equal(1);
+    });
+    it("should throw an error if no view is passed", function() {
+      return expect(function() {
+        return this.view.addInnerView();
+      }).to["throw"](Error);
+    });
+    it("should throw an error if the 'container' property is not defined", function() {
+      var newView;
+      newView = this.newView;
+      return expect(function() {
+        return this.view.addInnerView(newView);
+      }).to["throw"](Error);
+    });
+    return it("should render the new view in the container", function() {
+      this.view.container = '#fixtures';
+      this.view.addInnerView(this.newView);
+      return expect($('#fixtures').html()).to.equal('<div>This is a test</div>');
+    });
   });
   describe("close()", function() {
     it("should call the onClose function once", function() {
@@ -432,13 +454,30 @@ describe("App.Views.BaseView", function() {
       return expect(closeSpy2).to.have.been.calledOnce;
     });
   });
-  return describe("renderIn(container: String)", function() {
+  describe("renderIn(container: String)", function() {
     return it("should render the template inside the container", function() {
       var result;
       this.view.template = HBS['src/templates/test.hbs'];
       this.view.renderIn('#fixtures');
       result = $('#fixtures').html();
       return expect(result).to.equal('<h1>This is a test</h1>');
+    });
+  });
+  return describe("dismissAlert(target: String, options: Object)", function() {
+    it("should return an error if no target is passed", function() {
+      return expect(function() {
+        return this.view.dismissAlert();
+      }).to["throw"](Error);
+    });
+    it("should display a default message if no 'options' are passed", function() {
+      this.view.dismissAlert('#fixtures');
+      return expect($('#fixtures').html()).to.equal("<div class=\"alert alert-info alert-dismissable\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>\n  <strong>HINT:</strong> You should pass an Object with a message.\n</div>");
+    });
+    return it("should display the 'options.message' if passed", function() {
+      this.view.dismissAlert('#fixtures', {
+        message: "Test"
+      });
+      return expect($('#fixtures').html()).to.equal("<div class=\"alert alert-info alert-dismissable\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>\n  Test\n</div>");
     });
   });
 });
@@ -490,6 +529,8 @@ describe("App.Regions.BaseRegion", function(){
 		this.baseRegion = new App.Regions.BaseRegion();
 		this.oldView = new App.Views.BaseView();
 		this.newView = new App.Views.BaseView();
+		this.view = new App.Views.BaseView();
+		this.view.template = function(model){return 'Test'};
 	});
 
 	after(function(){
@@ -497,6 +538,10 @@ describe("App.Regions.BaseRegion", function(){
 	});
 
 	afterEach(function(){
+		this.baseRegion.remove();
+		this.oldView.remove();
+		this.newView.remove();
+		this.view.remove();
 		$('#fixtures').empty();
 	});
 
@@ -539,7 +584,8 @@ describe("App.Regions.BaseRegion", function(){
 		});
 	});
 
-	describe("render", function(){
+	
+	describe("renderView()", function(){
 		it("should render the currentView in the container", function(){
 			// If container or currentView is empty return
 			this.baseRegion.render();
@@ -551,23 +597,43 @@ describe("App.Regions.BaseRegion", function(){
 			};
 			this.baseRegion.container = '#fixtures';
 			this.baseRegion.currentView = view;
-			this.baseRegion.render();
+			this.baseRegion.renderView();
 			expect($('#fixtures').html()).to.equal('<p>Test</p>');
 		});
 	});
 
-	describe("swapView(newView)", function(){
+	describe("swapView(newView: View)", function(){
+		it("should throw an error if the container or the currentView is not set", function(){
+			expect(function(){this.baseRegion.renderView()}).to.throw(Error);
+			this.baseRegion.container = '#fixtures';
+			expect(function(){baseRegion.renderView()}).to.throw(Error);
+		});
+		it("should set the newView as the currentView if there isn't one set", function(){
+			expect(this.baseRegion.currentView).to.not.exist;
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.renderView(this.view);
+			expect(this.baseRegion.currentView).to.exist;
+		});
+		it("should render the currentView if no 'view' is passed", function(){
+			this.baseRegion.container = '#fixtures';
+			this.view.model = new App.Models.Application;
+			this.baseRegion.currentView = this.view;
+			this.baseRegion.renderView();
+			expect($('#fixtures').html()).to.equal('<div>Test</div>');
+		});
 		it("should call the swapCurrentView function once", function(){
 			sinon.spy(this.baseRegion, "swapCurrentView");
-			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.swapView(this.view);
 			expect(this.baseRegion.swapCurrentView).to.have.been.calledOnce;
 			this.baseRegion.swapCurrentView.restore();
 		});
 		it("should call the render function once", function(){
-			sinon.spy(this.baseRegion, "render");
-			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
-			expect(this.baseRegion.render).to.have.been.calledOnce;
-			this.baseRegion.render.restore();
+			sinon.spy(this.baseRegion, "renderView");
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.swapView(this.view);
+			expect(this.baseRegion.renderView).to.have.been.calledOnce;
+			this.baseRegion.renderView.restore();
 		});
 	});
 });

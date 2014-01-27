@@ -103,6 +103,23 @@ App.Config = (function() {
 
 })();
 
+Handlebars.registerHelper("ParseDate", function (date) {
+	var d = new Date(date);
+  var day = d.getDate();
+  var month = d.getMonth() + 1; //Months are zero based
+  var year = d.getFullYear();
+  var hours = d.getHours();
+  var minutes = d.getMinutes();
+  if (minutes < 10)
+  	minutes = "0" + minutes;
+  return (day + "/" + month + "/" + year + " " + hours + ":" + minutes);
+});
+Handlebars.registerHelper("Exists", function (attr, defaultValue) {
+	if (attr)
+		return attr;
+	else
+		return defaultValue;
+});
 this["HBS"] = this["HBS"] || {};
 
 this["HBS"]["src/templates/app_nav.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -137,17 +154,16 @@ this["HBS"] = this["HBS"] || {};
 this["HBS"]["src/templates/snippets/dismiss_alert.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, stack2, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
 
 
   buffer += "<div class=\"alert alert-";
-  if (stack1 = helpers.alert) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.alert); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.Exists || (depth0 && depth0.Exists)),stack1 ? stack1.call(depth0, (depth0 && depth0.alert), "info", options) : helperMissing.call(depth0, "Exists", (depth0 && depth0.alert), "info", options)))
     + " alert-dismissable\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n  ";
-  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
+  if (stack2 = helpers.message) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = (depth0 && depth0.message); stack2 = typeof stack2 === functionType ? stack2.call(depth0, {hash:{},data:data}) : stack2; }
+  if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n</div>";
   return buffer;
   });
@@ -203,6 +219,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 this["HBS"] = this["HBS"] || {};
 
+this["HBS"]["src/templates/users/users_index.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<h1>Usuarios</h1>\n<div class=\"table-responsive\">\n	<table class=\"table table-hover table-striped\">\n		<thead>\n			<tr>\n				<th>Usuario</th>\n				<th>Nombre</th>\n				<th>Apellido</th>\n				<th>E-mail</th>\n				<th>Creado por</th>\n				<th>Creado el</th>\n				<th>Modificado el</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n	</table>\n</div>";
+  });
+this["HBS"] = this["HBS"] || {};
+
 this["HBS"]["src/templates/users/users_new.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
@@ -210,6 +236,43 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   return "<div class=\"row\">\n	<div class=\"col-md-4 col-md-offset-4\">\n		<div class=\"panel panel-default\">\n			<div class=\"panel-heading\">\n				<h3 class=\"panel-title align-center\">Nuevo Usuario</h3>\n	 		</div>\n			<div class=\"panel-body\">\n				<div class=\"info\"></div>\n				<form accept-charset=\"UTF-8\" role=\"form\">\n					<fieldset>\n						<div class=\"form-group\">\n							<label for=\"username\" class=\"control-label\">Usuario</label>\n							<input class=\"form-control\" placeholder=\"Usuario\" name=\"username\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"firstname\" class=\"control-label\">Nombre</label>\n							<input class=\"form-control\" placeholder=\"Nombre\" name=\"firstname\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"lastName\" class=\"control-label\">Apellido</label>\n							<input class=\"form-control\" placeholder=\"Apellido\" name=\"lastName\" type=\"text\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"email\" class=\"control-label\">E-mail</label>\n							<input class=\"form-control\" placeholder=\"E-mail\" name=\"email\" type=\"email\">\n						</div>\n						<div class=\"form-group\">\n							<label for=\"password\" class=\"control-label\">Password</label>\n							<input class=\"form-control\" placeholder=\"Password\" name=\"password\" type=\"password\" value=\"\">\n						</div>\n						<hr>\n						<input class=\"btn btn-lg btn-success btn-block\" type=\"submit\" value=\"Crear Usuario\">\n					</fieldset>\n				</form>\n			</div>\n	</div>\n</div>\n";
+  });
+this["HBS"] = this["HBS"] || {};
+
+this["HBS"]["src/templates/users/users_row.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
+
+
+  buffer += "<td>";
+  if (stack1 = helpers.username) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.username); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n<td>";
+  if (stack1 = helpers.firstname) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.firstname); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n<td>";
+  if (stack1 = helpers.lastname) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.lastname); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n<td>";
+  if (stack1 = helpers.email) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.email); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n<td>";
+  if (stack1 = helpers.createdBy) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.createdBy); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n<td>";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.ParseDate || (depth0 && depth0.ParseDate)),stack1 ? stack1.call(depth0, (depth0 && depth0.created), options) : helperMissing.call(depth0, "ParseDate", (depth0 && depth0.created), options)))
+    + "</td>\n<td>";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.ParseDate || (depth0 && depth0.ParseDate)),stack1 ? stack1.call(depth0, (depth0 && depth0.lastUpdated), options) : helperMissing.call(depth0, "ParseDate", (depth0 && depth0.lastUpdated), options)))
+    + "</td>";
+  return buffer;
   });
 var _ref, _ref1, _ref2, _ref3,
   __hasProp = {}.hasOwnProperty,
@@ -222,6 +285,8 @@ App.Models.BaseModel = (function(_super) {
     _ref = BaseModel.__super__.constructor.apply(this, arguments);
     return _ref;
   }
+
+  BaseModel.prototype.idAttribute = "_id";
 
   BaseModel.prototype.url = function() {
     var u;
@@ -556,8 +621,12 @@ App.Regions.BaseRegion = (function(_super) {
       this.container = options.container;
     }
     if (options.currentView != null) {
-      return this.currentView = options.currentView;
+      this.currentView = options.currentView;
     }
+    if (this.awake) {
+      this.awake();
+    }
+    return this.innerViews = [];
   };
 
   BaseRegion.prototype.swapCurrentView = function(newView) {
@@ -569,14 +638,26 @@ App.Regions.BaseRegion = (function(_super) {
 
   BaseRegion.prototype.swapView = function(newView) {
     this.swapCurrentView(newView);
-    return this.render();
+    return this.renderView();
   };
 
-  BaseRegion.prototype.render = function() {
-    if (!((this.currentView != null) && (this.container != null))) {
-      return;
+  BaseRegion.prototype.renderView = function(view) {
+    if (view == null) {
+      view = null;
     }
-    $(this.container).append(this.currentView.render().el);
+    if (this.container == null) {
+      throw new Error('You must set the container property before calling this function');
+    }
+    if (this.currentView == null) {
+      if (view == null) {
+        throw new Error('You must set the currentView or pass a new view to be rendered');
+      }
+      this.swapCurrentView(view);
+    }
+    if (view == null) {
+      view = this.currentView;
+    }
+    $(this.container).append(view.render().el);
     return this;
   };
 
@@ -626,7 +707,7 @@ App.Regions.HeaderRegion = (function(_super) {
 
 })(App.Regions.BaseRegion);
 
-var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6,
+var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -641,13 +722,6 @@ App.Views.BaseView = (function(_super) {
   BaseView.prototype.template = null;
 
   BaseView.prototype.dismissAlertTemplate = HBS['src/templates/snippets/dismiss_alert.hbs'];
-
-  BaseView.prototype.initialize = function() {
-    if (this.awake) {
-      this.awake();
-    }
-    return this.innerViews = [];
-  };
 
   BaseView.prototype.render = function() {
     var model;
@@ -677,6 +751,17 @@ App.Views.BaseView = (function(_super) {
     return this;
   };
 
+  BaseView.prototype.addInnerView = function(newView) {
+    if (newView == null) {
+      throw new Error('You must pass a new view to be rendered');
+    }
+    if (this.container == null) {
+      throw new Error('You must set the "container" property before calling this function');
+    }
+    this.innerViews.push(newView);
+    return this.renderView(newView);
+  };
+
   BaseView.prototype.close = function() {
     if (_.isFunction(this.beforeClose)) {
       this.beforeClose();
@@ -703,7 +788,7 @@ App.Views.BaseView = (function(_super) {
   BaseView.prototype.dismissAlert = function(target, options) {
     var attrs;
     if (target == null) {
-      return;
+      return new Error('Yoy must pass a target for the alert');
     }
     if (options != null) {
       attrs = options;
@@ -713,7 +798,7 @@ App.Views.BaseView = (function(_super) {
         message: "<strong>HINT:</strong> You should pass an Object with a message."
       };
     }
-    target = this.$(target);
+    target = $(target);
     if ((options != null) && (options.fade != null) && options.fade) {
       return target.hide().html(this.dismissAlertTemplate(attrs)).fadeIn('slow');
     } else {
@@ -723,8 +808,15 @@ App.Views.BaseView = (function(_super) {
 
   BaseView.prototype.handleValidations = function(model, errors) {
     var error, i, input, labels, message, _i, _len, _results;
+    this.dismissAlert('.info', {
+      alert: "danger",
+      message: 'Verifique su información'
+    });
     this.$('p.control-label').remove();
     this.$('.has-error').removeClass('has-error');
+    if (!((errors != null) && (model != null))) {
+      return;
+    }
     _results = [];
     for (i = _i = 0, _len = errors.length; _i < _len; i = ++_i) {
       error = errors[i];
@@ -739,7 +831,7 @@ App.Views.BaseView = (function(_super) {
 
   return BaseView;
 
-})(Backbone.View);
+})(App.Regions.BaseRegion);
 
 App.Views.AppNav = (function(_super) {
   __extends(AppNav, _super);
@@ -868,12 +960,53 @@ App.Views.Login = (function(_super) {
 
 })(App.Views.BaseView);
 
+App.Views.UsersIndex = (function(_super) {
+  __extends(UsersIndex, _super);
+
+  function UsersIndex() {
+    _ref6 = UsersIndex.__super__.constructor.apply(this, arguments);
+    return _ref6;
+  }
+
+  UsersIndex.prototype.template = HBS['src/templates/users/users_index.hbs'];
+
+  UsersIndex.prototype.container = 'tbody';
+
+  UsersIndex.prototype.awake = function() {
+    this.collection.fetch();
+    this.listenTo(this.collection, "add", this.appendView);
+    return this.listenTo(this.collection, "remove", this.removeView);
+  };
+
+  UsersIndex.prototype.handleSync = function() {
+    var _this = this;
+    return this.collection.forEach(function(model) {
+      return _this.appendView(model);
+    });
+  };
+
+  UsersIndex.prototype.appendView = function(model) {
+    var view;
+    view = new App.Views.UsersRow({
+      model: model
+    });
+    return this.addInnerView(view);
+  };
+
+  UsersIndex.prototype.removeView = function(model) {
+    return console.log(model);
+  };
+
+  return UsersIndex;
+
+})(App.Views.BaseView);
+
 App.Views.UsersNew = (function(_super) {
   __extends(UsersNew, _super);
 
   function UsersNew() {
-    _ref6 = UsersNew.__super__.constructor.apply(this, arguments);
-    return _ref6;
+    _ref7 = UsersNew.__super__.constructor.apply(this, arguments);
+    return _ref7;
   }
 
   UsersNew.prototype.template = HBS['src/templates/users/users_new.hbs'];
@@ -929,13 +1062,41 @@ App.Views.UsersNew = (function(_super) {
   };
 
   UsersNew.prototype.handleError = function(model, xhr, options) {
-    return this.dismissAlert('.info', {
-      alert: 'danger',
-      message: 'Se ha producido un error al intentar crear el usuario.'
-    });
+    this.handleValidations();
+    if (xhr.status === 400) {
+      return this.dismissAlert('.info', {
+        alert: 'danger',
+        message: 'Ya existe el usuario.'
+      });
+    } else {
+      return this.dismissAlert('.info', {
+        alert: 'danger',
+        message: 'Se ha producido un error al intentar crear el usuario.'
+      });
+    }
   };
 
   return UsersNew;
+
+})(App.Views.BaseView);
+
+App.Views.UsersRow = (function(_super) {
+  __extends(UsersRow, _super);
+
+  function UsersRow() {
+    _ref8 = UsersRow.__super__.constructor.apply(this, arguments);
+    return _ref8;
+  }
+
+  UsersRow.prototype.template = HBS['src/templates/users/users_row.hbs'];
+
+  UsersRow.prototype.tagName = 'tr';
+
+  UsersRow.prototype.awake = function() {
+    return this.listenTo(this.model, "remove", this.close);
+  };
+
+  return UsersRow;
 
 })(App.Views.BaseView);
 
@@ -999,12 +1160,13 @@ App.Routers.MainRouter = (function(_super) {
     'login': 'login',
     'logout': 'logout',
     'users/new': 'usersNew',
+    'users': 'usersIndex',
     'home': 'index',
     '': 'index',
     '*path': 'default'
   };
 
-  MainRouter.prototype.requiresAuth = ['', '#home', '#logout', '#users/new'];
+  MainRouter.prototype.requiresAuth = ['', '#home', '#logout', '#users/new', '#users'];
 
   MainRouter.prototype.preventAccessWhenAuth = ["#login"];
 
@@ -1108,6 +1270,12 @@ App.Routers.MainRouter = (function(_super) {
   MainRouter.prototype.usersNew = function() {
     return App.contentRegion.swapView(new App.Views.UsersNew({
       model: new App.Models.User()
+    }));
+  };
+
+  MainRouter.prototype.usersIndex = function() {
+    return App.contentRegion.swapView(new App.Views.UsersIndex({
+      collection: new App.Collections.Users()
     }));
   };
 

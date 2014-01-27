@@ -1,4 +1,6 @@
 class App.Models.BaseModel extends Backbone.Model
+	idAttribute: "_id"
+
 	url: ->
 		u = @urlRoot
 		if @id then u = u + "/#{@id}"

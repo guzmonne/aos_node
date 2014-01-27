@@ -3,6 +3,8 @@ describe("App.Regions.BaseRegion", function(){
 		this.baseRegion = new App.Regions.BaseRegion();
 		this.oldView = new App.Views.BaseView();
 		this.newView = new App.Views.BaseView();
+		this.view = new App.Views.BaseView();
+		this.view.template = function(model){return 'Test'};
 	});
 
 	after(function(){
@@ -10,6 +12,10 @@ describe("App.Regions.BaseRegion", function(){
 	});
 
 	afterEach(function(){
+		this.baseRegion.remove();
+		this.oldView.remove();
+		this.newView.remove();
+		this.view.remove();
 		$('#fixtures').empty();
 	});
 
@@ -52,7 +58,8 @@ describe("App.Regions.BaseRegion", function(){
 		});
 	});
 
-	describe("render", function(){
+	
+	describe("renderView()", function(){
 		it("should render the currentView in the container", function(){
 			// If container or currentView is empty return
 			this.baseRegion.render();
@@ -64,23 +71,43 @@ describe("App.Regions.BaseRegion", function(){
 			};
 			this.baseRegion.container = '#fixtures';
 			this.baseRegion.currentView = view;
-			this.baseRegion.render();
+			this.baseRegion.renderView();
 			expect($('#fixtures').html()).to.equal('<p>Test</p>');
 		});
 	});
 
-	describe("swapView(newView)", function(){
+	describe("swapView(newView: View)", function(){
+		it("should throw an error if the container or the currentView is not set", function(){
+			expect(function(){this.baseRegion.renderView()}).to.throw(Error);
+			this.baseRegion.container = '#fixtures';
+			expect(function(){baseRegion.renderView()}).to.throw(Error);
+		});
+		it("should set the newView as the currentView if there isn't one set", function(){
+			expect(this.baseRegion.currentView).to.not.exist;
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.renderView(this.view);
+			expect(this.baseRegion.currentView).to.exist;
+		});
+		it("should render the currentView if no 'view' is passed", function(){
+			this.baseRegion.container = '#fixtures';
+			this.view.model = new App.Models.Application;
+			this.baseRegion.currentView = this.view;
+			this.baseRegion.renderView();
+			expect($('#fixtures').html()).to.equal('<div>Test</div>');
+		});
 		it("should call the swapCurrentView function once", function(){
 			sinon.spy(this.baseRegion, "swapCurrentView");
-			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.swapView(this.view);
 			expect(this.baseRegion.swapCurrentView).to.have.been.calledOnce;
 			this.baseRegion.swapCurrentView.restore();
 		});
 		it("should call the render function once", function(){
-			sinon.spy(this.baseRegion, "render");
-			this.baseRegion.swapView(new App.Views.BaseView({el: '#fixtures'}));
-			expect(this.baseRegion.render).to.have.been.calledOnce;
-			this.baseRegion.render.restore();
+			sinon.spy(this.baseRegion, "renderView");
+			this.baseRegion.container = '#fixtures';
+			this.baseRegion.swapView(this.view);
+			expect(this.baseRegion.renderView).to.have.been.calledOnce;
+			this.baseRegion.renderView.restore();
 		});
 	});
 });

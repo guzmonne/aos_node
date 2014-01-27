@@ -1,10 +1,19 @@
 class App.Routers.MainRouter extends App.Routers.BaseRouter 
 	routes:
+		# Session
+		# -------
 		'login'								:	'login'
 		'logout'							: 'logout'
+		# Users
+		# -----
 		'users/new'						: 'usersNew'
+		'users'								: 'usersIndex'
+		# Home
+		# ----
 		'home'								: 'index'
 		''										: 'index'
+		# Defualt
+		# -------
 		'*path'								:	'default'
 
 	# ================================
@@ -15,6 +24,7 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 		'#home'
 		'#logout'
 		'#users/new'
+		'#users'
 	]
 
 	# ====================================================================
@@ -92,3 +102,5 @@ class App.Routers.MainRouter extends App.Routers.BaseRouter
 	# -----
 	usersNew: ->
 		App.contentRegion.swapView(new App.Views.UsersNew({model: new App.Models.User()}))
+	usersIndex: ->
+		App.contentRegion.swapView(new App.Views.UsersIndex({collection: new App.Collections.Users()}))
