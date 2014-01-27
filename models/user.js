@@ -1,21 +1,22 @@
 // ===================
 // MODULE DEPENDENCIES
 // ===================
-var mongoose      = require('mongoose');
-var mongooseTimes = require('mongoose-times');
-var validate      = require('mongoose-validator').validate;
-var Schema        = mongoose.Schema;
-var crypto        = require('crypto');
+var mongoose        = require('mongoose');
+var mongooseTimes   = require('mongoose-times');
+var validate        = require('mongoose-validator').validate;
+var uniqueValidator = require('mongoose-unique-validator');
+var Schema          = mongoose.Schema;
+var crypto          = require('crypto');
 
 // ==================
 // SCHEMA VALIDATIONS
 // ==================
-var nameValidatior = [validate( { message: "debe tener entre 3 y 50 caracteres"}
+var nameValidatior =  [validate(  { message: "debe tener entre 3 y 50 caracteres"}
                                 , 'len'
                                 , 3
                                 , 50
                               )
-                    ];
+                      ];
 
 // ===========
 // USER SCHEMA
@@ -23,13 +24,14 @@ var nameValidatior = [validate( { message: "debe tener entre 3 y 50 caracteres"}
 var UserSchema = new Schema({
   firstname      : { type: String, required: '{PATH} is required!', validate: nameValidatior },
   lastname       : { type: String, required: '{PATH} is required!', validate: nameValidatior },
-  email          : { type: String, required: '{PATH} is required!' },
-  username       : { type: String, required: '{PATH} is required!', validate: nameValidatior },
+  email          : { type: String, required: '{PATH} is required!', unique: true },
+  username       : { type: String, required: '{PATH} is required!', validate: nameValidatior, unique: true },
   hashed_password: { type: String },
   salt           : { type: String },
   createdBy      : { type: String }
 });
 UserSchema.plugin(mongooseTimes);
+UserSchema.plugin(uniqueValidator);
 
 // ========
 // VIRTUALS
@@ -48,9 +50,11 @@ UserSchema.virtual('password')
 var validatePresenceOf = function (value) {
   return value && value.length
 };
+
 var validateLengthOf = function(value) {
   return (value.length > 7);
 };
+
 UserSchema.path('hashed_password').validate(function(v){
   if (!validatePresenceOf(this._password)){
     this.invalidate('password', 'debe escribir un password para el usuario');
@@ -59,23 +63,6 @@ UserSchema.path('hashed_password').validate(function(v){
     this.invalidate('password', 'debe tener más de 7 caracteres');
   }
 });
-// =============
-// PRE-SAVE HOOK
-// =============
-// UserSchema.pre('save', function(next) {
-//   var err = {};
-//   if (!this.isNew) return next()
-//   if (!validatePresenceOf(this.password)){
-//     err["password"] = {};
-//     err["password"]["message"] = "debe escribir un password para el usuario";
-//     return next(err)
-//   }
-//   if (!validateLengthOf(this.password)){
-//     err["password"] = {};
-//     err["password"]["message"] = "debe tener mas de 7 caracteres";
-//     return next(err)
-//   }
-// });
 
 // =======
 // METHODS

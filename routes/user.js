@@ -8,12 +8,11 @@ var User = mongoose.model('User');
 // CONTROLLER METHODS
 // ==================
 exports.index = function(req, res){
-  res.json({
-		name: "Guzman Monne",
-		email: "guzmonne@hotmail.com",
-		phone: "6962030",
-		cellphone: "099750505",
-		rememberToken: "jdsdfdf5dfd54f5v5fvt7499q49s3c21c2b31"
+	var query = User.find({});
+	query.select('username firstname lastname email createdBy lastUpdated created');
+	query.exec(function(err, result){
+		if (err) return handleError(err, req, res);
+		return res.send(result);
 	});
 };
 

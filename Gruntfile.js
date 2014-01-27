@@ -68,7 +68,7 @@ module.exports = function(grunt){
 												, 'public/javascripts/app.js'
 												, 'public/javascripts/config.js'
 												],
-			jsOnSrc: ['src/**/*.js'],
+			//jsOnSrc: ['src/**/*.js'],
 			specs: ['test/javascripts/allspecs.spec.coffeescripts.js'
 						,	'test/javascripts/allspecs.spec.javascripts.js'
 						, 'test/javascripts/allspecs.spec.coffeescripts.coffee']
@@ -78,7 +78,7 @@ module.exports = function(grunt){
 				separator: "\n",
 			},
 			handlebars: {
-				src: "public/javascripts/*-template.js",
+				src: ["src/templates/_helpers/*.js", "public/javascripts/*-template.js"],
 				dest: "public/javascripts/templates.js"
 			},
 			models: {

@@ -43,11 +43,6 @@ describe "App.Models.BaseModel", ->
 					expect(keys).to.contain "attr"
 					expect(keys).to.contain "message"
 
-			it "should not check atributes that are not yet in the model", ->
-				errors = @model.validate(@invAttr)
-				for error in errors
-					expect(error.attr).not.to.equal("attr4")
-
 		describe "validatePresenceOf(value: Var)", ->
 			it "should return true if the value exists and it's not empty", ->
 				value = "NotEmpty"
