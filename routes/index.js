@@ -35,7 +35,6 @@ exports.session = function(req, res){
 };
 
 exports.login = function(req, res, next) {
-  req.session.user = req.user;
   return res.send(200, userSession(req));
 };
 

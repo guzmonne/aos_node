@@ -3,6 +3,7 @@
 // ===================
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
+var Vent = require('../vent');
 
 // ==================
 // CONTROLLER METHODS
@@ -12,6 +13,9 @@ exports.index = function(req, res){
 	query.select('username firstname lastname email createdBy lastUpdated created');
 	query.exec(function(err, result){
 		if (err) return handleError(err, req, res);
+		
+		Vent.subscribe(req.session.user._id, 'users:new');
+
 		return res.send(result);
 	});
 };
@@ -50,6 +54,15 @@ exports.create = function(req, res){
 				error: err.errors
 			});
 		}
+
+		Vent.propagateEvent({
+			srvEvent: "users:new",
+			data: {
+				event: "users:new",
+				data : "A new user was created"
+			}
+		});
+
 		return res.send(200, {
 			username : user.username,
 			firstname: user.firstname,

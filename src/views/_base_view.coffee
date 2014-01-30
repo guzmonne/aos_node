@@ -1,6 +1,8 @@
 class App.Views.BaseView extends App.Regions.BaseRegion 
 	template            : null
 	dismissAlertTemplate: HBS['src/templates/snippets/dismiss_alert.hbs']
+	badgeTemplate       : HBS['src/templates/snippets/badge.hbs']
+	calloutTemplate     : HBS['src/templates/snippets/callout.hbs']
 
 	render: ->
 		if _.isFunction @beforeRender then @beforeRender()
@@ -44,6 +46,27 @@ class App.Views.BaseView extends App.Regions.BaseRegion
 			target.hide().html(@dismissAlertTemplate(attrs)).fadeIn('slow')
 		else
 			target.html(@dismissAlertTemplate(attrs))
+
+	callout: (target, options) ->
+		return new Error('Yoy must pass a target for the alert') unless target?
+		if options?
+			attrs = options
+		else
+			attrs = {
+				alert: "info",
+				message: "<strong>HINT:</strong> You should pass an Object with a message."
+			}
+		target = $(target)
+		if options? and options.fade? and options.fade
+			target.hide().html(@calloutTemplate(attrs)).fadeIn('slow')
+		else
+			target.html(@calloutTemplate(attrs))
+
+	badge: (target, value, id="") ->
+		return new Error('Yoy must pass a target for the badge') unless target?
+		return new Error('Yoy must pass a value for the badge') unless value?
+		target = $(target)
+		target.append(@badgeTemplate({value: value, id})).hide().fadeIn('slow')
 
 	handleValidations: (model, errors) ->
 		@dismissAlert '.info',

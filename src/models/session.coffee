@@ -48,9 +48,9 @@ class App.Models.Session extends Backbone.Model
 			type: 'POST'
 		login.done (response) =>
 			App.user.set response
+			App.sseInit()
 			@set "authenticated", true
 			@set "user", JSON.stringify(response.user);
-			console.log @get "redirectFrom"
 			if @get "redirectFrom"
 				path = @get "redirectFrom"
 				@unset "redirectFrom"
@@ -67,6 +67,8 @@ class App.Models.Session extends Backbone.Model
 		logout.done (response) =>
 			# Clear the session data
 			@clear()
+			# Stop the server-side events connection
+			App.vent.source.close();
 			# Set the new csrf token to csrf variable and call initialize to
 			# update the $.ajaxSetup with new csrf
 			csrf = response.csrf
@@ -79,6 +81,7 @@ class App.Models.Session extends Backbone.Model
 		Session.done (response) =>
 			@set "authenticated", true
 			App.user.set response
+			App.sseInit()
 
 		Session.fail (response) =>
 			response = JSON.parse response.responseText

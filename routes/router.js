@@ -3,6 +3,7 @@
 // ===========
 var index = require('./index');
 var user  = require('./user');
+var sse   = require('../server-side_events');
 
 // ======
 // ROUTES
@@ -23,10 +24,24 @@ module.exports = function(app, passport){
 	// --------------
 	app.get( '/session', 				index.session);
 	app.post('/session/login'
-		, passport.authenticate('local')
+		, function (req, res, next){
+			passport.authenticate('local', function(err, user, info){
+				if (err) {return next(err);}
+				if (!user) {
+					return res.send(400,{
+						error: info.message
+					})
+				}
+				req.session.user = user;
+				next();
+			})(req, res, next);
+		}
 		, index.login);
 	app.del( '/session/logout', index.logout);
-
+	// =======================
+	// SERVER SIDE EVENT ROUTE
+	// =======================
+	app.get('/sse', sse.sseInit);
 	// =============
 	// ROUTE FILTERS
 	// =============

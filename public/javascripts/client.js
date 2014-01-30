@@ -27,6 +27,34 @@ window.App = {
       new App.Routers.MainRouter();
       return Backbone.history.start();
     });
+  },
+  sseInit: function() {
+    var _this = this;
+    if (!!window.EventSource) {
+      this.vent.source = new EventSource("/sse");
+      this.vent.source.addEventListener('sse::connection', function(e) {
+        return console.log(e);
+      });
+      this.vent.source.onmessage = function(event) {
+        var data;
+        data = JSON.parse(event.data);
+        event = data.event;
+        delete data.event;
+        console.log(data);
+        return _this.vent.trigger(event, data);
+      };
+      return this.vent.source.onerror = function(event) {
+        switch (event.target.readyState) {
+          case EventSource.CONNECTING:
+            break;
+          case EventSource.CLOSED:
+            console.log("Connection failed. Will not retry.");
+            break;
+        }
+      };
+    } else {
+      return console.log("EventSource not supported.");
+    }
   }
 };
 
@@ -141,6 +169,44 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 this["HBS"] = this["HBS"] || {};
 
+this["HBS"]["src/templates/snippets/badge.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<span id=\"";
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.id); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"badge\">";
+  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</span>";
+  return buffer;
+  });
+this["HBS"] = this["HBS"] || {};
+
+this["HBS"]["src/templates/snippets/callout.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"bs-callout bs-callout-";
+  if (stack1 = helpers.alert) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.alert); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n	";
+  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n</div>";
+  return buffer;
+  });
+this["HBS"] = this["HBS"] || {};
+
 this["HBS"]["src/templates/content.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
@@ -225,7 +291,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<h1>Usuarios</h1>\n<div class=\"table-responsive\">\n	<table class=\"table table-hover table-striped\">\n		<thead>\n			<tr>\n				<th>Usuario</th>\n				<th>Nombre</th>\n				<th>Apellido</th>\n				<th>E-mail</th>\n				<th>Creado por</th>\n				<th>Creado el</th>\n				<th>Modificado el</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n	</table>\n</div>";
+  return "<h1>Usuarios</h1>\n<div class=\"info\"></div>\n<div class=\"table-responsive\">\n	<table class=\"table table-hover table-striped\">\n		<thead>\n			<tr>\n				<th>Usuario</th>\n				<th>Nombre</th>\n				<th>Apellido</th>\n				<th>E-mail</th>\n				<th>Creado por</th>\n				<th>Creado el</th>\n				<th>Modificado el</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n	</table>\n</div>";
   });
 this["HBS"] = this["HBS"] || {};
 
@@ -474,9 +540,9 @@ App.Models.Session = (function(_super) {
     login.done(function(response) {
       var path;
       App.user.set(response);
+      App.sseInit();
       _this.set("authenticated", true);
       _this.set("user", JSON.stringify(response.user));
-      console.log(_this.get("redirectFrom"));
       if (_this.get("redirectFrom")) {
         path = _this.get("redirectFrom");
         _this.unset("redirectFrom");
@@ -506,6 +572,7 @@ App.Models.Session = (function(_super) {
     return logout.done(function(response) {
       var csrf;
       _this.clear();
+      App.vent.source.close();
       csrf = response.csrf;
       _this.initialize();
       return callback();
@@ -518,7 +585,8 @@ App.Models.Session = (function(_super) {
     Session = this.fetch();
     Session.done(function(response) {
       _this.set("authenticated", true);
-      return App.user.set(response);
+      App.user.set(response);
+      return App.sseInit();
     });
     Session.fail(function(response) {
       var csrf;
@@ -723,6 +791,10 @@ App.Views.BaseView = (function(_super) {
 
   BaseView.prototype.dismissAlertTemplate = HBS['src/templates/snippets/dismiss_alert.hbs'];
 
+  BaseView.prototype.badgeTemplate = HBS['src/templates/snippets/badge.hbs'];
+
+  BaseView.prototype.calloutTemplate = HBS['src/templates/snippets/callout.hbs'];
+
   BaseView.prototype.render = function() {
     var model;
     if (_.isFunction(this.beforeRender)) {
@@ -804,6 +876,44 @@ App.Views.BaseView = (function(_super) {
     } else {
       return target.html(this.dismissAlertTemplate(attrs));
     }
+  };
+
+  BaseView.prototype.callout = function(target, options) {
+    var attrs;
+    if (target == null) {
+      return new Error('Yoy must pass a target for the alert');
+    }
+    if (options != null) {
+      attrs = options;
+    } else {
+      attrs = {
+        alert: "info",
+        message: "<strong>HINT:</strong> You should pass an Object with a message."
+      };
+    }
+    target = $(target);
+    if ((options != null) && (options.fade != null) && options.fade) {
+      return target.hide().html(this.calloutTemplate(attrs)).fadeIn('slow');
+    } else {
+      return target.html(this.calloutTemplate(attrs));
+    }
+  };
+
+  BaseView.prototype.badge = function(target, value, id) {
+    if (id == null) {
+      id = "";
+    }
+    if (target == null) {
+      return new Error('Yoy must pass a target for the badge');
+    }
+    if (value == null) {
+      return new Error('Yoy must pass a value for the badge');
+    }
+    target = $(target);
+    return target.append(this.badgeTemplate({
+      value: value,
+      id: id
+    })).hide().fadeIn('slow');
   };
 
   BaseView.prototype.handleValidations = function(model, errors) {
@@ -920,6 +1030,12 @@ App.Views.ContentView = (function(_super) {
 
   ContentView.prototype.template = HBS['src/templates/content.hbs'];
 
+  ContentView.prototype.awake = function() {
+    return this.listenTo(App.vent, "sse:users:updated", function(data) {
+      return $('h1').text(data.data);
+    });
+  };
+
   return ContentView;
 
 })(App.Views.BaseView);
@@ -972,14 +1088,26 @@ App.Views.UsersIndex = (function(_super) {
 
   UsersIndex.prototype.container = 'tbody';
 
+  UsersIndex.prototype.untrackedUsers = 0;
+
   UsersIndex.prototype.awake = function() {
     this.collection.fetch();
     this.listenTo(this.collection, "add", this.appendView);
-    return this.listenTo(this.collection, "remove", this.removeView);
+    this.listenTo(this.collection, "remove", this.removeView);
+    return this.listenTo(App.vent, "users:new", this.sseUsersNew);
+  };
+
+  UsersIndex.prototype.sseUsersNew = function(message) {
+    this.untrackedUsers++;
+    this.$('.info').empty();
+    return this.dismissAlert(".info", {
+      message: "" + (this.untrackedUsers === 1 ? "Se ha creado un nuevo usuario" : "Se han creado " + this.untrackedUsers + " nuevos usuarios") + "				<button id='resync' type='button' class='btn btn-info'>Sincronizar</button>				"
+    });
   };
 
   UsersIndex.prototype.handleSync = function() {
     var _this = this;
+    this.untrackedUsers = 0;
     return this.collection.forEach(function(model) {
       return _this.appendView(model);
     });

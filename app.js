@@ -8,6 +8,7 @@ var path     = require('path');
 var toobusy  = require('toobusy');
 var config   = require('./config.js');
 var passport = require('passport');
+var events   = require('events');
 // Session management using Redis
 var RedisStore = require('connect-redis')(express);
 
@@ -91,7 +92,6 @@ app.use(function(req, res, next){
 	}
 });
 
-
 // ========
 // PASSPORT
 // ========
@@ -111,6 +111,15 @@ app.use(function(req, res){
   });
 });
 
-http.createServer(app).listen(app.get('port'), function(){
+// ===========================
+// SERVER & SERVER-SIDE EVENTS
+// ===========================
+var server = http.createServer(app);
+//require('./server-side_events')(server);
+
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+// http.createServer(app).listen(app.get('port'), function(){
+//   console.log('Express server listening on port ' + app.get('port'));
+// });
