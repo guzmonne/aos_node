@@ -7,13 +7,19 @@ module.exports = function(grunt){
 					reporter: 'Spec',
 					urls: ['http://localhost:3000/test.html']
 				}
+			},
+			server: {
+				options: {
+					reporter: 'Spec',
+					src     : ['test/server/specs/**/*.spec.js', 'test/server/specs/*.spec.js']
+				}
 			}
 		},
 		concurrent: {
 			options: {
       	logConcurrentOutput: true
       },
-			watch: ['watch:src', 'watch:spec']
+			watch: ['watch:src', 'watch:spec', 'watch:serverTest']
 		},
 		jshint: {
 			test: {
@@ -48,6 +54,10 @@ module.exports = function(grunt){
 			test: {
 				files: ['test/javascripts/allspecs.spec.js', 'public/javascripts/client.js'],
 				tasks: ['mocha:test']
+			},
+			serverTest: {
+				files: ['test/server/coffee_specs/**/*.spec.coffee'],
+				tasks: ['coffee:serverSpecs']
 			}
 		},
 		clean: {
@@ -159,6 +169,17 @@ module.exports = function(grunt){
 				src    : ['**/*.coffee'],
 				dest   : 'public/javascripts/',
 				ext    : '.js'
+			},
+			serverSpecs: {
+				options: {
+					bare: true
+				},
+				expand : true,
+				flatten: false,
+				cwd    : 'test/server/coffee_specs/',
+				src    : '**/*spec.coffee',
+				dest   : 'test/server/specs',
+				ext    : '.spec.js'
 			}
 		}, 
 		handlebars: {

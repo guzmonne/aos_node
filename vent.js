@@ -24,11 +24,11 @@ Vent.prototype = {
 		
 		// Create listener to remove client when the connection fails
 		client.on('close', function(){
-			console.log("Client with id " + client.id + " disconnected");
+			//console.log("Client with id " + client.id + " disconnected");
 			delete self.clients[id];
 		});
 		
-		console.log("New client added with id:" + client.id);
+		//console.log("New client added with id:" + client.id);
 		return this;
 	},
 
@@ -49,7 +49,7 @@ Vent.prototype = {
 			client.req.session.sseSubs = [];
 		}
 
-		client.send("sse::connection", "The connection was Successfull", client.id);
+		//client.send("sse::connection", "The connection was Successfull", client.id);
 		return this;
 	},
 
@@ -66,7 +66,7 @@ Vent.prototype = {
 
 	subscribeClient: function(client, subscription){
 		client.on(subscription, function(data){
-			console.log("Client ", this.id , " is responding to " , data);
+			//console.log("Client ", this.id , " is responding to " , data);
 			client.send(JSON.stringify(data));
 		})
 
@@ -83,7 +83,7 @@ Vent.prototype = {
 				client.req.session.sseSubs.push(subscription);
 				self.subscribeClient(client, subscription);
 			}
-			console.log(client.req.session.sseSubs);
+			//console.log(client.req.session.sseSubs);
 		}
 
 		return self;
@@ -91,7 +91,7 @@ Vent.prototype = {
 
 	propagateEvent: function(eventData){
 		var self = this;
-		console.log(eventData);
+		//console.log(eventData);
 
 		for (var clientID in self.clients){
 			self.clients[clientID].emit(eventData.srvEvent, eventData.data);

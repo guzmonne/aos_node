@@ -2,8 +2,8 @@
 // MODULE DEPENDENCIES
 // ===================
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
-var Vent = require('../vent');
+var User     = mongoose.model('User');
+var Vent     = require('../vent');
 
 // ==================
 // CONTROLLER METHODS
