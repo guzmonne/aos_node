@@ -70,3 +70,34 @@ Next Steps:
 - Making the register form only available for Admin users
  - Build an authorization system for the app
 
+----------
+
+v0.0.1d
+-------
+Chages:
+
+ - Changes in the Grunt tasks:
+  	- The concurrent task was modified. Now server test specs can be created on CoffeeScript on the `/test/server/coffee_specs/` folder. So, a CoffeeScript 'compile' task was added, as well as a 'watch' task, and they where added to the 'concurrent' task.
+ - Mores tests where added or modified
+ - Server code can now be tested
+  	- The specs can be created in CoffeeScript on the `/test/server/coffee_specs/` or we can write them in JavaScript on the `/test/server/specs/` folder. Mocha will only test the files on the `specs/` folder so remember to compile the CoffeeScripts tests.
+ - Added Server Side Events
+		- This means that we can now push information from the server to the clients.
+		- A new object was created called 'Vent' that helps to keep track of the connected clients and can be used to push events to the clients so information can be sent to them.
+		- SSE is started by the client when the user get successfuly authenticated
+		- If the user get's disconnected it will be automatically be removed from the client list.
+		- The 'App' object in the client is the one in charge of connecting to the SSE.
+		- If the Browser is incapable of using the SSE there is not a fallback implemented. So, nothing will happen.
+		- A very simple subsription model was implemented to send information only to subsribed clients
+			- It can be seen in action with the users.
+			- When a client asks for the users index information it automatically subscribes to 'users:new' events. When a new user is created, we let the clients know using  the Vent object. Only the subsribed clients will get this notification.
+			- On the client side, if the 'UsersIndex' view is active it will react to the 'users:new' event sent by the server and display an info alert to the user.
+			- The "Sincronizar" button is not working yet. Is just there for design.
+
+Next Steps:
+
+- Making the register form only available for Admin users
+- Build an authorization system for the app
+- Separating the login page from the rest of the app
+- Implementing HTTPS
+
