@@ -3,7 +3,7 @@
 // ===========
 var index = require('./index');
 var user  = require('./user');
-var sse   = require('../server-side_events');
+var sse   = require('../libs/server-side_events');
 
 // ======
 // ROUTES

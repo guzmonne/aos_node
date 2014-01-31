@@ -3,7 +3,7 @@
 // ===================
 var mongoose = require('mongoose');
 var User     = mongoose.model('User');
-var Vent     = require('../vent');
+var Vent     = require('../libs/vent');
 
 // ==================
 // CONTROLLER METHODS

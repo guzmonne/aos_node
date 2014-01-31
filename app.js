@@ -95,7 +95,7 @@ app.use(function(req, res, next){
 // ========
 // PASSPORT
 // ========
-require('./passport')(passport);
+require('./libs/passport')(passport);
 
 // ======
 // ROUTES
