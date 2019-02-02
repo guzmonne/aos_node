@@ -1,5 +1,8 @@
 AOS
 ===
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/guzmonne/aos_node.svg)](https://greenkeeper.io/)
+
 ----------
 
 v0.0.1
